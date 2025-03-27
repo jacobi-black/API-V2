@@ -1,8 +1,25 @@
+"use client";
+
 import React from "react";
 import { Suspense } from "react";
 import { Skeleton } from "@/components/shared/ui/skeleton";
+import { useState } from "react";
+import { useEndpointStore } from "@/store/endpoint.store";
+import { useCyberArkQuery } from "@/hooks/api/use-cyberark-query";
+import { useAuthStore } from "@/store/auth.store";
+import { EndpointExplorer } from "@/components/features/endpoints/endpoint-explorer";
+import { EndpointDetail } from "@/components/features/endpoints/endpoint-detail";
+import { ResultsViewer } from "@/components/features/results/results-viewer";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/shared/ui/card";
+import { LogIn } from "lucide-react";
 
-export default async function DashboardPage() {
+export default function DashboardPage() {
   return (
     <main className="container mx-auto p-4">
       <div className="flex flex-col gap-8">
@@ -31,29 +48,10 @@ function DashboardSkeleton() {
   );
 }
 
-("use client");
-
-import { useState } from "react";
-import { useEndpointStore } from "@/store/endpoint.store";
-import { useCyberArkQuery } from "@/hooks/api/use-cyberark-query";
-import { useAuthStore } from "@/store/auth.store";
-import { EndpointExplorer } from "@/components/features/endpoints/endpoint-explorer";
-import { EndpointDetail } from "@/components/features/endpoints/endpoint-detail";
-import { ResultsViewer } from "@/components/features/results/results-viewer";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/shared/ui/card";
-import { LogIn } from "lucide-react";
-import { Button } from "@/components/shared/ui/button";
-
 function DashboardClient() {
-  const { selectedEndpoint, selectedCategory, pathParams, queryParams } = useEndpointStore();
+  const { selectedEndpoint, pathParams, queryParams } = useEndpointStore();
   const { session, isAuthenticated } = useAuthStore();
-  const [results, setResults] = useState<any>(null);
+  const [results, setResults] = useState<Record<string, unknown> | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const { execute, isLoading } = useCyberArkQuery(null);
@@ -63,7 +61,7 @@ function DashboardClient() {
     if (!selectedEndpoint || !isAuthenticated) return;
 
     // Déterminer la catégorie et l'endpoint pour la requête
-    let endpointPath = selectedEndpoint.category;
+    let endpointPath: string = selectedEndpoint.category;
 
     // Remplacer les paramètres de chemin s'il y en a
     let pathWithParams = selectedEndpoint.path;

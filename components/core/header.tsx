@@ -75,7 +75,7 @@ export function Header() {
           ) : (
             <Sheet open={isLoginSheetOpen} onOpenChange={setIsLoginSheetOpen}>
               <SheetTrigger asChild>
-                <Button size="sm">
+                <Button size="sm" onClick={() => setIsLoginSheetOpen(true)}>
                   <LogIn className="mr-2 h-4 w-4" />
                   <span>Se connecter</span>
                 </Button>

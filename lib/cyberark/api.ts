@@ -38,6 +38,10 @@ export const CYBERARK_ENDPOINTS = {
     LIST: "PasswordVault/API/Reports",
     RUN: "PasswordVault/API/Reports/{id}/RunReport",
   },
+  SYSTEM: {
+    SUMMARY: "PasswordVault/API/SystemHealth/Summary",
+    DETAILS: "PasswordVault/API/SystemHealth/Details",
+  },
 };
 
 /**

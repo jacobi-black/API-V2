@@ -1,4 +1,16 @@
-# CyberArk API Explorer
+### Déploiement
+
+L'application peut être déployée facilement en utilisant Docker :
+
+```bash
+# Construction du conteneur
+docker-compose build
+
+# Démarrage des services
+docker-compose up -d
+```
+
+Pour plus d'informations sur le déploiement, consultez [docs/deployment/DOCKER.md](docs/deployment/DOCKER.md).# CyberArk API Explorer
 
 ![Version](https://img.shields.io/badge/version-0.2.0-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
@@ -46,7 +58,7 @@ CyberArk API Explorer offre une solution intégrée à ces problèmes, permettan
 
 ## Fonctionnalités
 
-### Implémentées (Phases 1-2)
+### Implémentées (Phases 1-3)
 
 - **Authentification CyberArk** - Connexion à n'importe quelle instance CyberArk avec gestion sécurisée du token
 - **Exploration d'endpoints** - Interface intuitive pour parcourir les API disponibles
@@ -55,9 +67,6 @@ CyberArk API Explorer offre une solution intégrée à ces problèmes, permettan
 - **Recherche dans les résultats** - Filtrage et mise en évidence des résultats
 - **Pagination** - Navigation facile dans les grands ensembles de données
 - **Proxy API** - Contourne les problèmes CORS courants avec les API CyberArk
-
-### En cours de développement (Phase 3)
-
 - **Exportation de données** - Export en CSV et JSON pour analyse ultérieure
 - **Améliorations UX/UI** - Optimisations de l'interface utilisateur et des animations
 - **Gestion d'état avancée** - Historique des requêtes et préférences utilisateur
@@ -75,8 +84,8 @@ Le projet est actuellement en développement actif :
 
 - **Phase 1 (Infrastructure) ✅** - Configuration de l'environnement et authentification
 - **Phase 2 (Fonctionnalités de base) ✅** - Explorateur d'endpoints, requêtes API et affichage des résultats
-- **Phase 3 (Exportation et UX) 🔄** - En cours de développement
-- **Phase 4 (Tests et documentation) 📅** - Planifiée
+- **Phase 3 (Exportation et UX) ✅** - Export de données, améliorations UX/UI, gestion d'état
+- **Phase 4 (Tests et documentation) ✅** - Tests unitaires, intégration, E2E, et documentation complète
 - **Phase 5 (Finalisation) 📅** - Planifiée
 
 Pour suivre l'avancement détaillé, consultez le [document de roadmap](docs/development/ROADMAP.md).
@@ -94,8 +103,10 @@ L'application utilise une approche modulaire avec des composants spécialisés p
 - **Authentification** - Gestion sécurisée des tokens
 - **Exploration d'API** - Interface de navigation des endpoints
 - **Visualisation de données** - Affichage structuré des résultats
+- **Exportation** - Fonctionnalités d'exportation CSV et JSON
+- **Optimisation** - Métriques Web Vitals et performance
 
-Pour plus de détails, voir [docs/architecture/IMPLEMENTATION.md](docs/architecture/IMPLEMENTATION.md).
+Pour plus de détails, voir [docs/architecture/ARCHITECTURE.md](docs/architecture/ARCHITECTURE.md) et [docs/architecture/UX_UI_COMPONENTS.md](docs/architecture/UX_UI_COMPONENTS.md).
 
 ## Installation
 
@@ -242,15 +253,15 @@ Pour plus de détails, voir le [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md).
 - ✅ Requêtes API vers CyberArk
 - ✅ Affichage des résultats
 
-### Phase 3: Exportation et UX (En cours 🔄)
-- 🔄 Fonctionnalités d'exportation (CSV/JSON)
-- 🔄 Améliorations UX/UI
-- 🔄 Gestion d'état globale
+### Phase 3: Exportation et UX (Terminée ✅)
+- ✅ Fonctionnalités d'exportation (CSV/JSON)
+- ✅ Améliorations UX/UI
+- ✅ Gestion d'état globale
 
-### Phase 4: Tests et documentation (À venir)
-- 📅 Tests complets
-- 📅 Documentation améliorée
-- 📅 Préparation au déploiement
+### Phase 4: Tests et documentation (Terminée ✅)
+- ✅ Tests complets (unitaires, intégration, E2E)
+- ✅ Documentation améliorée
+- ✅ Préparation au déploiement (Docker, CI/CD)
 
 ### Phase 5: Finalisation (À venir)
 - 📅 Revue de code et refactoring

@@ -182,21 +182,33 @@ API_V2/
 │   ├── dashboard/            # Dashboard pages
 │   └── ...                   # Other app pages
 ├── components/               # Composants React
-│   ├── credential/           # Authentication components
-│   ├── endpoint/             # API endpoint components
-│   ├── results/              # Results display components
-│   └── ui/                   # UI components (Shadcn)
+│   ├── core/                 # Composants de base (layout, etc.)
+│   ├── features/             # Composants par fonctionnalité
+│   │   ├── auth/             # Composants d'authentification
+│   │   ├── endpoints/        # Composants pour explorer les endpoints
+│   │   ├── results/          # Composants pour afficher les résultats
+│   │   └── history/          # Composants liés à l'historique
+│   └── shared/               # Composants partagés
+│       ├── ui/               # Composants UI (Shadcn)
+│       └── theme/            # Composants de thème
 ├── lib/                      # Bibliothèques et utilitaires
-│   ├── cyberark/             # CyberArk utilities
-│   └── utils.ts              # Common utilities
+│   ├── analytics/            # Outils d'analyse (Web Vitals)
+│   ├── config/               # Configuration
+│   ├── cyberark/             # Utilitaires CyberArk
+│   └── utils/                # Utilitaires généraux et export
 ├── hooks/                    # Hooks React personnalisés
+│   └── api/                  # Hooks liés aux API
 ├── types/                    # Définitions de types TypeScript
 ├── store/                    # Stores Zustand
 ├── schemas/                  # Schémas Zod
-├── actions/                  # Actions serveur
+├── scripts/                  # Scripts utilitaires
 ├── tests/                    # Tests
+│   ├── unit/                 # Tests unitaires
+│   ├── integration/          # Tests d'intégration
+│   └── e2e/                  # Tests end-to-end
 ├── public/                   # Ressources statiques
 └── docs/                     # Documentation
+    └── rules/                # Règles et conventions
 ```
 
 ## Développement

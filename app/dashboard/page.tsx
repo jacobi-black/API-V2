@@ -1,6 +1,6 @@
 import React from "react";
 import { Suspense } from "react";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Skeleton } from '@/components/shared/ui/skeleton";
 
 export default async function DashboardPage() {
   return (
@@ -35,12 +35,12 @@ function DashboardSkeleton() {
 
 import { useState, useEffect } from "react";
 import { useEndpointStore } from "@/store/endpoint.store";
-import { useCyberArkQuery } from "@/hooks/use-cyberark-query";
+import { useCyberArkQuery } from '@/hooks/api/use-cyberark-query";
 import { useAuthStore } from "@/store/auth.store";
 import { useRouter } from "next/navigation";
-import { EndpointExplorer } from "@/components/endpoint/endpoint-explorer";
-import { EndpointDetail } from "@/components/endpoint/endpoint-detail";
-import { ResultsViewer } from "@/components/results/results-viewer";
+import { EndpointExplorer } from '@/components/features/endpoints/endpoint-explorer";
+import { EndpointDetail } from '@/components/features/endpoints/endpoint-detail";
+import { ResultsViewer } from '@/components/features/results/results-viewer";
 
 function DashboardClient() {
   const { selectedEndpoint, selectedCategory, pathParams, queryParams } = useEndpointStore();

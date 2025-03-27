@@ -1,5 +1,5 @@
 import { renderHook, act } from '@testing-library/react';
-import { useCyberArkQuery } from '@/hooks/use-cyberark-query';
+import { useCyberArkQuery } from '@/hooks/api/use-cyberark-query';
 import { useAuthStore } from '@/store/auth.store';
 
 // Mock du store d'authentification

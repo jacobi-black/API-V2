@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { CYBERARK_ENDPOINTS } from "@/lib/cyberark/api";
-import { ensureTrailingSlash, handleFetchError } from "@/lib/utils";
+import { ensureTrailingSlash, handleFetchError } from '@/lib/utils/utils";
 
 /**
  * Gestionnaire pour récupérer les coffres-forts CyberArk

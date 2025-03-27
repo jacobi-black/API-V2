@@ -1,4 +1,4 @@
-import { cn, formatDate, ensureTrailingSlash } from "@/lib/utils";
+import { cn, formatDate, ensureTrailingSlash } from '@/lib/utils/utils";
 
 describe("Utilitaires de base", () => {
   describe("cn (utility de classe)", () => {

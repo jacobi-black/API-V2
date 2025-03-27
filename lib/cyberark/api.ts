@@ -1,5 +1,5 @@
 import { CyberArkCredentials, AuthType } from "@/types/auth";
-import { ensureTrailingSlash, handleFetchError } from "@/lib/utils";
+import { ensureTrailingSlash, handleFetchError } from '@/lib/utils/utils";
 
 /**
  * Constantes pour les endpoints CyberArk

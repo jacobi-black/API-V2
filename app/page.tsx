@@ -1,4 +1,4 @@
-import { CredentialForm } from "@/components/credential/credential-form";
+import { CredentialForm } from '@/components/features/auth/credential-form";
 
 export default async function HomePage() {
   return (

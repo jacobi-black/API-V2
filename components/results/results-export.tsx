@@ -1,324 +1,296 @@
 "use client";
 
-import { useState, useMemo } from "react";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Download, FileJson, FileText, Settings } from "lucide-react";
-import { exportToCsv, CsvExportOptions } from "@/lib/export/csv-export";
-import { exportToJson, JsonExportOptions } from "@/lib/export/json-export";
+import React, { useState } from 'react';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Download, X } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { exportData, ExportFormat, canExportAsCsv, prepareExportData } from '@/lib/export/export-utils';
+import { detectColumns } from '@/lib/export/csv-export';
+import { Badge } from '@/components/ui/badge';
 
 export interface ResultsExportProps {
+  /**
+   * Données à exporter
+   */
   data: any;
-  isArray?: boolean;
-  endpointName?: string;
+  
+  /**
+   * Nom suggéré pour le fichier d'exportation
+   */
+  suggestedFileName?: string;
+  
+  /**
+   * Désactiver le bouton si aucune donnée n'est disponible
+   */
+  disabled?: boolean;
 }
 
-export function ResultsExport({ data, isArray, endpointName }: ResultsExportProps) {
-  const [exportType, setExportType] = useState<"csv" | "json">("json");
-  const [open, setOpen] = useState(false);
-  const [filename, setFilename] = useState(() => {
-    const date = new Date().toISOString().slice(0, 10);
-    return `cyberark-${endpointName || "export"}-${date}`;
-  });
+export function ResultsExport({ data, suggestedFileName, disabled = false }: ResultsExportProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [format, setFormat] = useState<ExportFormat>('json');
+  const [fileName, setFileName] = useState(suggestedFileName || 'cyberark-export');
+  const [includeTimestamp, setIncludeTimestamp] = useState(true);
+  const [prettyPrint, setPrettyPrint] = useState(true);
+  const [includeHeaders, setIncludeHeaders] = useState(true);
+  const [delimiter, setDelimiter] = useState(',');
   
-  // Options CSV
-  const [csvIncludeHeaders, setCsvIncludeHeaders] = useState(true);
-  const [csvDelimiter, setCsvDelimiter] = useState(",");
-  const [csvFields, setCsvFields] = useState<string[]>([]);
-  const [csvFieldsFilterType, setCsvFieldsFilterType] = useState<"include" | "exclude">("include");
+  // Vérifier si l'export CSV est possible
+  const csvExportable = canExportAsCsv(data);
   
-  // Options JSON
-  const [jsonPrettyPrint, setJsonPrettyPrint] = useState(true);
-  const [jsonIndent, setJsonIndent] = useState(2);
-  const [jsonFields, setJsonFields] = useState<string[]>([]);
-  const [jsonFieldsFilterType, setJsonFieldsFilterType] = useState<"include" | "exclude">("include");
+  // Détecter les colonnes si les données sont exportables en CSV
+  const detectedColumns = csvExportable ? detectColumns(data) : [];
+  const [selectedColumns, setSelectedColumns] = useState<string[]>(detectedColumns);
+  const [selectAllColumns, setSelectAllColumns] = useState(true);
   
-  // Détection des champs disponibles
-  const availableFields = useMemo(() => {
-    if (!data) return [];
-    
-    const sampleData = Array.isArray(data) ? data[0] : data;
-    return sampleData ? Object.keys(sampleData) : [];
-  }, [data]);
-  
-  // Gestion des champs sélectionnés pour CSV
-  const handleCsvFieldToggle = (field: string) => {
-    setCsvFields(prev => 
-      prev.includes(field)
-        ? prev.filter(f => f !== field)
-        : [...prev, field]
-    );
-  };
-  
-  // Gestion des champs sélectionnés pour JSON
-  const handleJsonFieldToggle = (field: string) => {
-    setJsonFields(prev => 
-      prev.includes(field)
-        ? prev.filter(f => f !== field)
-        : [...prev, field]
-    );
-  };
-  
-  // Export rapide sans ouvrir la boîte de dialogue
-  const handleQuickExport = () => {
-    if (!data) return;
-    
-    const date = new Date().toISOString().slice(0, 10);
-    const quickFilename = `cyberark-${endpointName || "export"}-${date}`;
-    
-    if (exportType === "csv") {
-      exportToCsv(data, quickFilename);
+  // Gérer la sélection/désélection de toutes les colonnes
+  const handleSelectAllColumns = (checked: boolean) => {
+    setSelectAllColumns(checked);
+    if (checked) {
+      setSelectedColumns(detectedColumns);
     } else {
-      exportToJson(data, quickFilename);
+      setSelectedColumns([]);
     }
   };
   
-  // Export avec les options configurées
-  const handleConfiguredExport = () => {
-    if (!data) return;
-    
-    if (exportType === "csv") {
-      const options: CsvExportOptions = {
-        includeHeaders: csvIncludeHeaders,
-        delimiter: csvDelimiter,
-        fields: csvFieldsFilterType === "include" && csvFields.length > 0 
-          ? csvFields 
-          : csvFieldsFilterType === "exclude" 
-            ? availableFields.filter(field => !csvFields.includes(field))
-            : undefined
-      };
-      
-      exportToCsv(data, filename, options);
+  // Gérer la sélection/désélection d'une colonne
+  const handleColumnToggle = (column: string, checked: boolean) => {
+    if (checked) {
+      setSelectedColumns(prev => [...prev, column]);
     } else {
-      const options: JsonExportOptions = {
-        prettyPrint: jsonPrettyPrint,
-        indent: jsonIndent,
-        fields: jsonFieldsFilterType === "include" && jsonFields.length > 0
-          ? jsonFields
-          : jsonFieldsFilterType === "exclude"
-            ? availableFields.filter(field => !jsonFields.includes(field))
-            : undefined
-      };
-      
-      exportToJson(data, filename, options);
+      setSelectedColumns(prev => prev.filter(col => col !== column));
     }
     
-    setOpen(false);
+    // Mettre à jour l'état "tout sélectionner"
+    const allSelected = detectedColumns.every(col => 
+      checked ? 
+        [...selectedColumns, column].includes(col) : 
+        selectedColumns.filter(c => c !== column).includes(col)
+    );
+    setSelectAllColumns(allSelected);
   };
   
-  // Si pas de données, désactiver le bouton
-  if (!data) {
-    return (
-      <Button disabled variant="outline" size="sm">
-        <Download className="h-4 w-4 mr-1" />
-        Exporter
-      </Button>
-    );
-  }
-  
+  // Fonction pour exporter les données
+  const handleExport = () => {
+    try {
+      const dataToExport = prepareExportData(data);
+      
+      const options = {
+        format,
+        fileName,
+        includeTimestamp,
+        csvOptions: {
+          includeHeaders,
+          delimiter,
+          columns: selectedColumns
+        },
+        jsonOptions: {
+          prettyPrint
+        }
+      };
+      
+      const result = exportData(dataToExport, options);
+      result.download();
+      
+      // Fermer le dialogue
+      setIsOpen(false);
+    } catch (error) {
+      console.error('Erreur lors de l\'exportation:', error);
+      // Gérer l'erreur ici (afficher une notification, etc.)
+    }
+  };
+
   return (
-    <div className="flex gap-2">
-      <Select defaultValue={exportType} onValueChange={(value) => setExportType(value as "csv" | "json")}>
-        <SelectTrigger className="w-[110px]">
-          <SelectValue placeholder="Format" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="json">
-            <div className="flex items-center">
-              <FileJson className="h-4 w-4 mr-2" />
-              JSON
-            </div>
-          </SelectItem>
-          <SelectItem value="csv">
-            <div className="flex items-center">
-              <FileText className="h-4 w-4 mr-2" />
-              CSV
-            </div>
-          </SelectItem>
-        </SelectContent>
-      </Select>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <DialogTrigger asChild>
+        <Button 
+          variant="outline" 
+          size="sm" 
+          onClick={() => setIsOpen(true)}
+          disabled={disabled || !data}
+        >
+          <Download className="h-4 w-4 mr-1" />
+          Exporter
+        </Button>
+      </DialogTrigger>
       
-      <Button variant="outline" size="sm" onClick={handleQuickExport}>
-        <Download className="h-4 w-4 mr-1" />
-        Exporter
-      </Button>
-      
-      <Dialog open={open} onOpenChange={setOpen}>
-        <DialogTrigger asChild>
-          <Button variant="ghost" size="sm">
-            <Settings className="h-4 w-4" />
-          </Button>
-        </DialogTrigger>
-        <DialogContent className="sm:max-w-[600px]">
-          <DialogHeader>
-            <DialogTitle>Options d'exportation</DialogTitle>
-            <DialogDescription>
-              Configurez les paramètres pour l'exportation de vos données.
-            </DialogDescription>
-          </DialogHeader>
-          
-          <Tabs defaultValue={exportType} onValueChange={(value) => setExportType(value as "csv" | "json")}>
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="json">JSON</TabsTrigger>
-              <TabsTrigger value="csv">CSV</TabsTrigger>
-            </TabsList>
-            
-            <div className="mt-4 space-y-4">
-              <div>
-                <Label htmlFor="filename">Nom du fichier</Label>
-                <Input
-                  id="filename"
-                  value={filename}
-                  onChange={(e) => setFilename(e.target.value)}
-                  placeholder="Nom du fichier (sans extension)"
-                />
-              </div>
-            </div>
-            
-            <TabsContent value="json" className="space-y-4">
+      <DialogContent className="sm:max-w-[500px] max-h-[80vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle>Exporter les résultats</DialogTitle>
+          <DialogDescription>
+            Configurez les options d'exportation ci-dessous.
+          </DialogDescription>
+        </DialogHeader>
+        
+        <div className="grid gap-4 py-4">
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="format" className="text-right">
+              Format
+            </Label>
+            <RadioGroup 
+              id="format" 
+              value={format} 
+              onValueChange={(value) => setFormat(value as ExportFormat)}
+              className="flex items-center space-x-4 col-span-3"
+            >
               <div className="flex items-center space-x-2">
-                <Checkbox
-                  id="jsonPrettyPrint"
-                  checked={jsonPrettyPrint}
-                  onCheckedChange={(checked) => setJsonPrettyPrint(checked === true)}
-                />
-                <Label htmlFor="jsonPrettyPrint">Formater le JSON (pretty print)</Label>
+                <RadioGroupItem value="json" id="json" />
+                <Label htmlFor="json">JSON</Label>
               </div>
-              
-              {jsonPrettyPrint && (
-                <div>
-                  <Label htmlFor="jsonIndent">Indentation</Label>
-                  <div className="flex items-center space-x-2">
-                    <Input
-                      id="jsonIndent"
-                      type="number"
-                      min="1"
-                      max="8"
-                      value={jsonIndent}
-                      onChange={(e) => setJsonIndent(parseInt(e.target.value) || 2)}
-                      className="w-20"
-                    />
-                    <span className="text-sm text-muted-foreground">espaces</span>
-                  </div>
-                </div>
-              )}
-              
-              {isArray && availableFields.length > 0 && (
-                <div className="space-y-2">
-                  <Label>Filtrage des champs</Label>
-                  <Select
-                    value={jsonFieldsFilterType}
-                    onValueChange={(value) => setJsonFieldsFilterType(value as "include" | "exclude")}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Type de filtre" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="include">Inclure uniquement</SelectItem>
-                      <SelectItem value="exclude">Exclure</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  
-                  <div className="border rounded-md p-3 max-h-48 overflow-y-auto mt-2">
-                    <div className="space-y-2">
-                      {availableFields.map((field) => (
-                        <div key={field} className="flex items-center space-x-2">
-                          <Checkbox
-                            id={`json-field-${field}`}
-                            checked={jsonFields.includes(field)}
-                            onCheckedChange={() => handleJsonFieldToggle(field)}
-                          />
-                          <Label htmlFor={`json-field-${field}`} className="text-sm font-normal">
-                            {field}
-                          </Label>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              )}
-            </TabsContent>
-            
-            <TabsContent value="csv" className="space-y-4">
               <div className="flex items-center space-x-2">
-                <Checkbox
-                  id="csvIncludeHeaders"
-                  checked={csvIncludeHeaders}
-                  onCheckedChange={(checked) => setCsvIncludeHeaders(checked === true)}
+                <RadioGroupItem 
+                  value="csv" 
+                  id="csv" 
+                  disabled={!csvExportable} 
                 />
-                <Label htmlFor="csvIncludeHeaders">Inclure les en-têtes de colonnes</Label>
-              </div>
-              
-              <div>
-                <Label htmlFor="csvDelimiter">Délimiteur</Label>
-                <Select
-                  value={csvDelimiter}
-                  onValueChange={setCsvDelimiter}
+                <Label 
+                  htmlFor="csv" 
+                  className={!csvExportable ? "text-muted-foreground" : ""}
                 >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Choisir un délimiteur" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value=",">Virgule (,)</SelectItem>
-                    <SelectItem value=";">Point-virgule (;)</SelectItem>
-                    <SelectItem value="\t">Tabulation</SelectItem>
-                    <SelectItem value="|">Pipe (|)</SelectItem>
-                  </SelectContent>
-                </Select>
+                  CSV
+                  {!csvExportable && (
+                    <Badge variant="outline" className="ml-2 text-xs">
+                      Non disponible
+                    </Badge>
+                  )}
+                </Label>
+              </div>
+            </RadioGroup>
+          </div>
+          
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="fileName" className="text-right">
+              Nom du fichier
+            </Label>
+            <Input
+              id="fileName"
+              value={fileName}
+              onChange={(e) => setFileName(e.target.value)}
+              className="col-span-3"
+            />
+          </div>
+          
+          <div className="grid grid-cols-4 items-center gap-4">
+            <div className="text-right">
+              <Label>Options</Label>
+            </div>
+            <div className="col-span-3 space-y-2">
+              <div className="flex items-center space-x-2">
+                <Checkbox 
+                  id="includeTimestamp" 
+                  checked={includeTimestamp} 
+                  onCheckedChange={(checked) => setIncludeTimestamp(checked === true)}
+                />
+                <Label htmlFor="includeTimestamp">
+                  Inclure un horodatage
+                </Label>
               </div>
               
-              {isArray && availableFields.length > 0 && (
-                <div className="space-y-2">
-                  <Label>Filtrage des champs</Label>
-                  <Select
-                    value={csvFieldsFilterType}
-                    onValueChange={(value) => setCsvFieldsFilterType(value as "include" | "exclude")}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Type de filtre" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="include">Inclure uniquement</SelectItem>
-                      <SelectItem value="exclude">Exclure</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  
-                  <div className="border rounded-md p-3 max-h-48 overflow-y-auto mt-2">
-                    <div className="space-y-2">
-                      {availableFields.map((field) => (
-                        <div key={field} className="flex items-center space-x-2">
-                          <Checkbox
-                            id={`csv-field-${field}`}
-                            checked={csvFields.includes(field)}
-                            onCheckedChange={() => handleCsvFieldToggle(field)}
-                          />
-                          <Label htmlFor={`csv-field-${field}`} className="text-sm font-normal">
-                            {field}
-                          </Label>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
+              {format === 'json' && (
+                <div className="flex items-center space-x-2">
+                  <Checkbox 
+                    id="prettyPrint" 
+                    checked={prettyPrint} 
+                    onCheckedChange={(checked) => setPrettyPrint(checked === true)}
+                  />
+                  <Label htmlFor="prettyPrint">
+                    Formatage JSON (pretty print)
+                  </Label>
                 </div>
               )}
-            </TabsContent>
-          </Tabs>
+              
+              {format === 'csv' && (
+                <>
+                  <div className="flex items-center space-x-2">
+                    <Checkbox 
+                      id="includeHeaders" 
+                      checked={includeHeaders} 
+                      onCheckedChange={(checked) => setIncludeHeaders(checked === true)}
+                    />
+                    <Label htmlFor="includeHeaders">
+                      Inclure les en-têtes de colonnes
+                    </Label>
+                  </div>
+                  
+                  <div className="grid grid-cols-4 items-center gap-2 mt-3">
+                    <Label htmlFor="delimiter" className="text-right">
+                      Délimiteur
+                    </Label>
+                    <Select 
+                      value={delimiter} 
+                      onValueChange={setDelimiter}
+                    >
+                      <SelectTrigger className="col-span-3">
+                        <SelectValue placeholder="Délimiteur" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value=",">Virgule (,)</SelectItem>
+                        <SelectItem value=";">Point-virgule (;)</SelectItem>
+                        <SelectItem value="\t">Tabulation</SelectItem>
+                        <SelectItem value="|">Pipe (|)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
           
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setOpen(false)}>
-              Annuler
-            </Button>
-            <Button onClick={handleConfiguredExport}>
-              Exporter
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    </div>
+          {format === 'csv' && detectedColumns.length > 0 && (
+            <div className="grid grid-cols-4 gap-4 mt-2">
+              <div className="text-right pt-2">
+                <Label>Colonnes</Label>
+              </div>
+              <div className="col-span-3 border rounded-md p-3">
+                <div className="flex items-center space-x-2 mb-3 pb-2 border-b">
+                  <Checkbox 
+                    id="selectAllColumns" 
+                    checked={selectAllColumns} 
+                    onCheckedChange={(checked) => handleSelectAllColumns(checked === true)}
+                  />
+                  <Label htmlFor="selectAllColumns" className="font-medium">
+                    Sélectionner toutes les colonnes ({detectedColumns.length})
+                  </Label>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-2 max-h-[200px] overflow-y-auto">
+                  {detectedColumns.map(column => (
+                    <div key={column} className="flex items-center space-x-2">
+                      <Checkbox 
+                        id={`column-${column}`} 
+                        checked={selectedColumns.includes(column)} 
+                        onCheckedChange={(checked) => handleColumnToggle(column, checked === true)}
+                      />
+                      <Label 
+                        htmlFor={`column-${column}`} 
+                        className="text-sm truncate"
+                        title={column}
+                      >
+                        {column}
+                      </Label>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+        
+        <DialogFooter>
+          <Button variant="outline" onClick={() => setIsOpen(false)}>
+            <X className="h-4 w-4 mr-1" />
+            Annuler
+          </Button>
+          <Button onClick={handleExport} disabled={format === 'csv' && selectedColumns.length === 0}>
+            <Download className="h-4 w-4 mr-1" />
+            Exporter
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }

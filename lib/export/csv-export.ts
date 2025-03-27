@@ -3,9 +3,21 @@
  */
 
 /**
- * Options pour la conversion de JSON en CSV
+ * Options pour l'exportation CSV
  */
 export interface CsvExportOptions {
+  /**
+   * Délimiteur à utiliser pour séparer les valeurs
+   * @default ","
+   */
+  delimiter?: string;
+
+  /**
+   * Caractère d'échappement pour les valeurs contenant le délimiteur
+   * @default '"'
+   */
+  quoteChar?: string;
+
   /**
    * Inclure les en-têtes de colonnes
    * @default true
@@ -13,165 +25,289 @@ export interface CsvExportOptions {
   includeHeaders?: boolean;
 
   /**
-   * Caractère délimiteur entre les valeurs
-   * @default ","
+   * Nom du fichier d'exportation (sans extension)
+   * @default "cyberark-export"
    */
-  delimiter?: string;
+  fileName?: string;
 
   /**
-   * Liste des champs à inclure (si vide, tous les champs sont inclus)
+   * Liste des colonnes à inclure dans l'export
+   * Si non spécifié, toutes les colonnes seront incluses
    */
-  fields?: string[];
-
-  /**
-   * Transformations personnalisées pour les valeurs
-   * Fonction qui prend une valeur et retourne une chaîne formatée
-   */
-  transforms?: Record<string, (value: any) => string>;
-
-  /**
-   * Caractère pour encadrer les chaînes (quotation)
-   * @default "\""
-   */
-  quote?: string;
+  columns?: string[];
   
   /**
-   * Caractère de fin de ligne
-   * @default "\n"
+   * Fonction de transformation appliquée aux données avant l'exportation
    */
-  newline?: string;
+  transform?: (data: any) => any;
+
+  /**
+   * Inclure un horodatage dans le nom du fichier
+   * @default true
+   */
+  includeTimestamp?: boolean;
+  
+  /**
+   * Fonction personnalisée pour extraire un nom de colonne à partir de la clé d'objet
+   */
+  formatHeader?: (key: string) => string;
 }
 
 /**
- * Convertit un objet JavaScript en chaîne CSV
- * 
- * @param data Données à convertir (objet ou tableau d'objets)
- * @param options Options de conversion
- * @returns Chaîne CSV générée
+ * Interface pour un mappage de champs d'exportation
  */
-export function jsonToCsv(data: any, options: CsvExportOptions = {}): string {
-  // Valeurs par défaut des options
-  const includeHeaders = options.includeHeaders !== false;
-  const delimiter = options.delimiter || ',';
-  const quoteChar = options.quote || '"';
-  const newline = options.newline || '\n';
-  const transforms = options.transforms || {};
-  
-  // Si les données ne sont pas un tableau, les convertir en tableau
-  const dataArray = Array.isArray(data) ? data : [data];
-  
-  // Si le tableau est vide, retourner une chaîne vide
-  if (dataArray.length === 0) {
+export interface ExportFieldMapping {
+  /** Nom du champ source dans les données */
+  source: string;
+  /** Nom du champ dans le CSV exporté */
+  target: string;
+  /** Fonction de transformation pour la valeur du champ (optionnelle) */
+  transform?: (value: any, row: any) => any;
+}
+
+/**
+ * Échapper une valeur CSV
+ */
+function escapeCsvValue(value: any, quoteChar: string, delimiter: string): string {
+  if (value === null || value === undefined) {
     return '';
   }
   
-  // Déterminer les champs à inclure
-  const firstItem = dataArray[0];
-  const allFields = Object.keys(firstItem);
-  const fields = options.fields && options.fields.length > 0 
-    ? options.fields.filter(field => allFields.includes(field))
-    : allFields;
+  // Convertir les valeurs en chaînes
+  const stringValue = typeof value === 'object' 
+    ? JSON.stringify(value) 
+    : String(value);
   
-  // Fonction pour échapper les valeurs avec des délimiteurs, guillemets ou retours à la ligne
-  const escapeValue = (value: any): string => {
-    if (value === null || value === undefined) {
-      return '';
-    }
-    
-    const stringValue = String(value);
-    
-    // Si la valeur contient des délimiteurs, des guillemets ou des retours à la ligne,
-    // l'encadrer avec des guillemets et échapper les guillemets internes
-    if (
-      stringValue.includes(delimiter) || 
-      stringValue.includes(quoteChar) || 
-      stringValue.includes('\n') || 
-      stringValue.includes('\r')
-    ) {
-      return quoteChar + stringValue.replace(new RegExp(quoteChar, 'g'), quoteChar + quoteChar) + quoteChar;
-    }
-    
-    return stringValue;
-  };
+  // Échapper les guillemets en les doublant
+  const escapedValue = stringValue.replace(
+    new RegExp(quoteChar, 'g'), 
+    quoteChar + quoteChar
+  );
   
-  // Générer les en-têtes
-  let csv = '';
-  if (includeHeaders) {
-    csv = fields.map(escapeValue).join(delimiter) + newline;
+  // Si la valeur contient des délimiteurs ou des sauts de ligne, 
+  // ou des guillemets, l'entourer de guillemets
+  if (
+    escapedValue.includes(delimiter) || 
+    escapedValue.includes('\n') ||
+    escapedValue.includes('\r') || 
+    escapedValue.includes(quoteChar)
+  ) {
+    return quoteChar + escapedValue + quoteChar;
   }
   
-  // Générer les lignes de données
-  for (const item of dataArray) {
-    const row = fields.map(field => {
-      const value = item[field];
-      
-      // Appliquer la transformation si définie pour ce champ
-      if (transforms[field]) {
-        return escapeValue(transforms[field](value));
-      }
-      
-      // Traitement spécial pour les objets et les tableaux
-      if (typeof value === 'object' && value !== null) {
-        return escapeValue(JSON.stringify(value));
-      }
-      
-      return escapeValue(value);
-    });
-    
-    csv += row.join(delimiter) + newline;
-  }
-  
-  return csv;
+  return escapedValue;
 }
 
 /**
- * Télécharge les données CSV dans le navigateur
+ * Exporte des données au format CSV
  * 
- * @param csvString Chaîne CSV à télécharger
- * @param filename Nom du fichier (sans extension)
+ * @param data Les données à exporter (tableau d'objets)
+ * @param options Options d'exportation
+ * @returns Un objet avec une URL de téléchargement et une fonction de téléchargement
  */
-export function downloadCsv(csvString: string, filename: string): void {
-  // Créer un objet Blob avec le contenu CSV
-  const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+export function exportToCsv(data: any[], options: CsvExportOptions = {}) {
+  if (!Array.isArray(data)) {
+    throw new Error('Les données doivent être un tableau');
+  }
   
-  // Créer un URL pour le Blob
+  const {
+    delimiter = ',',
+    quoteChar = '"',
+    includeHeaders = true,
+    fileName = 'cyberark-export',
+    columns,
+    transform,
+    includeTimestamp = true,
+    formatHeader = (key: string) => key
+  } = options;
+  
+  // Appliquer la transformation si spécifiée
+  const processedData = transform ? transform(data) : data;
+  
+  if (processedData.length === 0) {
+    // Créer un fichier CSV vide
+    const blob = new Blob([''], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    
+    // Générer un nom de fichier
+    let outputFileName = fileName;
+    
+    if (includeTimestamp) {
+      const timestamp = new Date().toISOString().replace(/:/g, '-').replace(/\..+/, '');
+      outputFileName = `${fileName}-${timestamp}`;
+    }
+    
+    outputFileName = `${outputFileName}.csv`;
+    
+    // Fonction pour déclencher le téléchargement
+    const download = () => {
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = outputFileName;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    };
+    
+    return {
+      url,
+      fileName: outputFileName,
+      download,
+      cleanup: () => URL.revokeObjectURL(url)
+    };
+  }
+  
+  // Déterminer les colonnes à inclure
+  const firstRow = processedData[0];
+  const headerKeys = columns || Object.keys(firstRow);
+  
+  // Créer la ligne d'en-tête
+  let csvContent = '';
+  
+  if (includeHeaders) {
+    const headerRow = headerKeys
+      .map(key => escapeCsvValue(formatHeader(key), quoteChar, delimiter))
+      .join(delimiter);
+    csvContent += headerRow + '\r\n';
+  }
+  
+  // Ajouter les lignes de données
+  for (const row of processedData) {
+    const rowContent = headerKeys
+      .map(key => {
+        const value = key.includes('.') 
+          ? getNestedProperty(row, key) 
+          : row[key];
+        return escapeCsvValue(value, quoteChar, delimiter);
+      })
+      .join(delimiter);
+    csvContent += rowContent + '\r\n';
+  }
+  
+  // Créer un blob CSV
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  
+  // Générer un nom de fichier
+  let outputFileName = fileName;
+  
+  if (includeTimestamp) {
+    const timestamp = new Date().toISOString().replace(/:/g, '-').replace(/\..+/, '');
+    outputFileName = `${fileName}-${timestamp}`;
+  }
+  
+  outputFileName = `${outputFileName}.csv`;
+  
+  // Créer une URL pour le téléchargement
   const url = URL.createObjectURL(blob);
   
-  // Créer un élément <a> pour le téléchargement
-  const link = document.createElement('a');
-  link.href = url;
-  link.setAttribute('download', `${filename}.csv`);
+  // Fonction pour déclencher le téléchargement
+  const download = () => {
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = outputFileName;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
   
-  // Ajouter l'élément au DOM, cliquer dessus, puis le supprimer
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-  
-  // Libérer l'URL créé
-  URL.revokeObjectURL(url);
+  return {
+    url,
+    fileName: outputFileName,
+    download,
+    cleanup: () => URL.revokeObjectURL(url)
+  };
 }
 
 /**
- * Convertit et télécharge les données JSON au format CSV
- * 
- * @param data Données à convertir (objet ou tableau d'objets)
- * @param filename Nom du fichier (sans extension)
- * @param options Options de conversion
+ * Récupère une propriété imbriquée d'un objet en utilisant une notation pointée
+ * Exemple: getNestedProperty({a: {b: {c: 1}}}, 'a.b.c') retourne 1
  */
-export function exportToCsv(
-  data: any, 
-  filename: string, 
-  options: CsvExportOptions = {}
+function getNestedProperty(obj: any, path: string): any {
+  return path.split('.').reduce((prev, curr) => {
+    return prev && prev[curr] !== undefined ? prev[curr] : undefined;
+  }, obj);
+}
+
+/**
+ * Détecte automatiquement les colonnes à partir d'un tableau d'objets
+ * 
+ * @param data Tableau d'objets
+ * @param maxDepth Profondeur maximale pour les propriétés imbriquées
+ * @returns Liste des colonnes détectées
+ */
+export function detectColumns(data: any[], maxDepth: number = 2): string[] {
+  if (!Array.isArray(data) || data.length === 0) {
+    return [];
+  }
+  
+  const columns = new Set<string>();
+  
+  // Parcourir un échantillon de données (max 100 éléments) pour détecter toutes les colonnes
+  const sampleSize = Math.min(100, data.length);
+  
+  for (let i = 0; i < sampleSize; i++) {
+    const item = data[i];
+    if (typeof item === 'object' && item !== null) {
+      // Ajouter les propriétés de premier niveau
+      const keys = Object.keys(item);
+      for (const key of keys) {
+        columns.add(key);
+        
+        // Explorer les propriétés imbriquées si nécessaire
+        if (maxDepth > 1 && typeof item[key] === 'object' && item[key] !== null && !Array.isArray(item[key])) {
+          exploreNestedProperties(item[key], key, columns, 1, maxDepth);
+        }
+      }
+    }
+  }
+  
+  return Array.from(columns);
+}
+
+/**
+ * Explore récursivement les propriétés imbriquées d'un objet
+ */
+function exploreNestedProperties(
+  obj: any, 
+  parentPath: string, 
+  columns: Set<string>, 
+  currentDepth: number, 
+  maxDepth: number
 ): void {
-  if (!data) {
-    console.error('Aucune donnée à exporter');
+  if (currentDepth >= maxDepth || typeof obj !== 'object' || obj === null || Array.isArray(obj)) {
     return;
   }
   
-  try {
-    const csvString = jsonToCsv(data, options);
-    downloadCsv(csvString, filename);
-  } catch (error) {
-    console.error('Erreur lors de l\'exportation CSV:', error);
+  const keys = Object.keys(obj);
+  for (const key of keys) {
+    const path = `${parentPath}.${key}`;
+    columns.add(path);
+    
+    if (typeof obj[key] === 'object' && obj[key] !== null && !Array.isArray(obj[key])) {
+      exploreNestedProperties(obj[key], path, columns, currentDepth + 1, maxDepth);
+    }
   }
+}
+
+/**
+ * Formate un nom d'en-tête en format titre (première lettre majuscule, espaces entre mots)
+ * Exemple: "userName" devient "User Name"
+ */
+export function formatHeaderTitle(key: string): string {
+  // Remplacer les points par des espaces
+  let formatted = key.replace(/\./g, ' ');
+  
+  // Ajouter des espaces avant les majuscules
+  formatted = formatted.replace(/([A-Z])/g, ' $1');
+  
+  // Supprimer les espaces multiples et les espaces en début/fin
+  formatted = formatted.replace(/\s+/g, ' ').trim();
+  
+  // Mettre en majuscule la première lettre de chaque mot
+  return formatted
+    .split(' ')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
 }

@@ -5,12 +5,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ChevronDown, ChevronRight, Copy, Search } from "lucide-react";
+import { ChevronDown, ChevronRight, Copy, Download, Search } from "lucide-react";
 import { useEndpointStore } from "@/store/endpoint.store";
 import { ResultsError } from "./results-error";
 import { ResultsSkeleton } from "./results-skeleton";
 import { ResultsPagination } from "./results-pagination";
 import { ResultsExport } from "./results-export";
+import { useToast } from "@/components/ui/use-toast";
 
 export interface ResultsViewerProps {
   data: any;
@@ -26,6 +27,7 @@ export function ResultsViewer({ data, error, isLoading, onRetry }: ResultsViewer
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const { selectedEndpoint } = useEndpointStore();
+  const { toast } = useToast();
 
   // Si chargement, afficher le skeleton
   if (isLoading) {
@@ -70,14 +72,52 @@ export function ResultsViewer({ data, error, isLoading, onRetry }: ResultsViewer
     if (data) {
       navigator.clipboard.writeText(JSON.stringify(data, null, 2))
         .then(() => {
-          // On pourrait ajouter un toast ici pour confirmer
-          console.log("Copié dans le presse-papier");
+          toast({
+            title: "Copié !",
+            description: "Les données ont été copiées dans le presse-papier.",
+            duration: 3000,
+          });
         })
-        .catch(err => {
-          console.error("Erreur de copie:", err);
+        .catch((error) => {
+          console.error("Erreur lors de la copie :", error);
+          toast({
+            title: "Erreur",
+            description: "Impossible de copier les données.",
+            variant: "destructive",
+            duration: 3000,
+          });
         });
     }
   };
+
+  // Téléchargement des données JSON
+  const downloadJSON = () => {
+    if (data) {
+      const jsonBlob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(jsonBlob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `cyberark-api-${new Date().toISOString().replace(/:/g, '-')}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+      toast({
+        title: "Téléchargement démarré",
+        description: "Le fichier JSON a été téléchargé.",
+        duration: 3000,
+      });
+    }
+  };
+
+  // Générer un nom de fichier suggéré basé sur l'endpoint sélectionné
+  const suggestedFileName = useMemo(() => {
+    if (selectedEndpoint) {
+      return `cyberark-${selectedEndpoint.category}-${selectedEndpoint.id}`;
+    }
+    return 'cyberark-export';
+  }, [selectedEndpoint]);
 
   // Déterminer si les données sont un tableau
   const isArray = Array.isArray(data);
@@ -126,8 +166,7 @@ export function ResultsViewer({ data, error, isLoading, onRetry }: ResultsViewer
             </Button>
             <ResultsExport 
               data={data} 
-              isArray={isArray} 
-              endpointName={selectedEndpoint?.id || "results"}
+              suggestedFileName={suggestedFileName}
             />
           </div>
         </div>

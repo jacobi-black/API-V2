@@ -16,16 +16,20 @@ CyberArk API Explorer est une application web moderne qui permet d'explorer et d
 ### API
 - [Catalogue complet des API](/docs/api/API.md)
 - [Détails des endpoints](/docs/api/ENDPOINTS.md)
+- [Fonctionnalités d'exportation](/docs/api/EXPORT_IMPLEMENTATION.md)
 
 ### Architecture
 - [Vue d'ensemble de l'architecture](/docs/architecture/ARCHITECTURE.md)
 - [Modèles de données](/docs/architecture/MODELS.md)
 - [Structure de la base de données](/docs/architecture/DATABASE.md)
+- [Gestion d'état](/docs/architecture/STATE_MANAGEMENT.md)
+- [Composants UX/UI](/docs/architecture/UX_UI_COMPONENTS.md)
 
 ### Développement
 - [Feuille de route](/docs/development/ROADMAP.md)
 - [Stratégie de tests](/docs/development/TESTING.md)
 - [Guide de contribution](/docs/CONTRIBUTING.md)
+- [Documentation Phase 3](/docs/phase3/README.md)
 
 ### Sécurité
 - [Considérations de sécurité](/docs/security/SECURITY.md)

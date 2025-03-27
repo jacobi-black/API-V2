@@ -70,13 +70,29 @@ export async function GET(request: NextRequest) {
       throw await handleFetchError(response);
     }
 
-    // Analyser et retourner la réponse
-    const data = await response.json();
+    // Lire d'abord la réponse comme texte
+    const textResponse = await response.text();
 
-    return NextResponse.json({
-      success: true,
-      data,
-    });
+    // Vérifier si c'est du JSON valide
+    try {
+      const data = JSON.parse(textResponse);
+
+      return NextResponse.json({
+        success: true,
+        data,
+      });
+    } catch (_parseError) {
+      console.error("Erreur de parsing JSON:", textResponse.substring(0, 200));
+
+      return NextResponse.json(
+        {
+          success: false,
+          error:
+            "Le serveur a répondu avec un format invalide. Vérifiez l'URL et l'authentification.",
+        },
+        { status: 500 }
+      );
+    }
   } catch (error) {
     console.error("Erreur lors de la récupération des comptes:", error);
 

@@ -84,8 +84,19 @@ export async function authenticateCyberArk(credentials: CyberArkCredentials, aut
       throw await handleFetchError(response);
     }
 
-    // Le token est retourné directement comme une chaîne
-    const token = await response.text();
+    // Le token est retourné directement comme une chaîne texte
+    const responseText = await response.text();
+
+    // Vérifier si la réponse ressemble à du HTML
+    if (responseText.trim().startsWith("<!DOCTYPE") || responseText.trim().startsWith("<html")) {
+      console.error("Réponse HTML reçue au lieu du token:", responseText.substring(0, 200));
+      throw new Error(
+        "Le serveur a répondu avec une page HTML au lieu du token. Vérifiez l'URL et les identifiants."
+      );
+    }
+
+    // Le token est une simple chaîne de texte
+    const token = responseText;
 
     // Créer une date d'expiration (20 minutes par défaut)
     const createdAt = new Date();

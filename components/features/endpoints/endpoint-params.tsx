@@ -2,22 +2,23 @@
 
 import React from "react";
 import { Endpoint, EndpointParam, useEndpointStore } from "@/store/endpoint.store";
-import { Input } from '@/components/shared/ui/input";
-import { Label } from '@/components/shared/ui/label";
-import { Checkbox } from '@/components/shared/ui/checkbox";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/shared/ui/select";
+import { Input } from "@/components/shared/ui/input";
+import { Label } from "@/components/shared/ui/label";
+import { Checkbox } from "@/components/shared/ui/checkbox";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/shared/ui/select";
 
 export interface EndpointParamsFormProps {
   endpoint: Endpoint;
 }
 
 export function EndpointParamsForm({ endpoint }: EndpointParamsFormProps) {
-  const { 
-    pathParams, 
-    queryParams, 
-    setPathParam,
-    setQueryParam
-  } = useEndpointStore();
+  const { pathParams, queryParams, setPathParam, setQueryParam } = useEndpointStore();
 
   // Combiner tous les paramètres en sections
   const sections = [
@@ -27,7 +28,7 @@ export function EndpointParamsForm({ endpoint }: EndpointParamsFormProps) {
       params: endpoint.pathParams || [],
       values: pathParams,
       setter: setPathParam,
-      required: true
+      required: true,
     },
     {
       id: "query",
@@ -35,13 +36,13 @@ export function EndpointParamsForm({ endpoint }: EndpointParamsFormProps) {
       params: endpoint.queryParams || [],
       values: queryParams,
       setter: setQueryParam,
-      required: false
-    }
+      required: false,
+    },
   ];
 
   // Filtrer les sections vides
-  const nonEmptySections = sections.filter(section => section.params.length > 0);
-  
+  const nonEmptySections = sections.filter((section) => section.params.length > 0);
+
   if (nonEmptySections.length === 0) {
     return (
       <div className="py-4 text-center text-muted-foreground">
@@ -52,11 +53,11 @@ export function EndpointParamsForm({ endpoint }: EndpointParamsFormProps) {
 
   return (
     <div className="space-y-6">
-      {nonEmptySections.map(section => (
+      {nonEmptySections.map((section) => (
         <div key={section.id} className="space-y-4">
-          <h3 className="text-sm font-medium mb-2">{section.title}</h3>
+          <h3 className="mb-2 text-sm font-medium">{section.title}</h3>
           <div className="grid gap-4 md:grid-cols-2">
-            {section.params.map(param => (
+            {section.params.map((param) => (
               <ParamField
                 key={param.name}
                 param={param}
@@ -82,12 +83,12 @@ interface ParamFieldProps {
 function ParamField({ param, value, onChange, required }: ParamFieldProps) {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let newValue: string | number | boolean = e.target.value;
-    
+
     // Convertir la valeur selon le type attendu
     if (param.type === "number") {
       newValue = e.target.value === "" ? "" : Number(e.target.value);
     }
-    
+
     onChange(newValue);
   };
 
@@ -104,31 +105,24 @@ function ParamField({ param, value, onChange, required }: ParamFieldProps) {
       <Label htmlFor={param.name} className="flex justify-between">
         <span>
           {param.name}
-          {required && <span className="text-destructive ml-1">*</span>}
+          {required && <span className="ml-1 text-destructive">*</span>}
         </span>
         <span className="text-xs text-muted-foreground">{param.type}</span>
       </Label>
-      
+
       {param.description && (
-        <p className="text-xs text-muted-foreground mb-1">{param.description}</p>
+        <p className="mb-1 text-xs text-muted-foreground">{param.description}</p>
       )}
-      
+
       {param.type === "boolean" ? (
-        <Checkbox 
-          id={param.name}
-          checked={value === true}
-          onCheckedChange={handleCheckboxChange}
-        />
+        <Checkbox id={param.name} checked={value === true} onCheckedChange={handleCheckboxChange} />
       ) : param.options && param.options.length > 0 ? (
-        <Select 
-          value={String(value || "")} 
-          onValueChange={handleSelectChange}
-        >
+        <Select value={String(value || "")} onValueChange={handleSelectChange}>
           <SelectTrigger>
             <SelectValue placeholder="Sélectionner une option" />
           </SelectTrigger>
           <SelectContent>
-            {param.options.map(option => (
+            {param.options.map((option) => (
               <SelectItem key={option} value={option}>
                 {option}
               </SelectItem>

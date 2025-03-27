@@ -9,7 +9,7 @@ import { CredentialsSchema, CredentialsSchemaType } from "@/schemas/auth.schema"
 import { useAuthStore } from "@/store/auth.store";
 
 // UI Components
-import { Button } from '@/components/shared/ui/button";
+import { Button } from "@/components/shared/ui/button";
 import {
   Form,
   FormControl,
@@ -17,10 +17,16 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/shared/ui/form";
-import { Input } from '@/components/shared/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/shared/ui/select";
-import { Checkbox } from '@/components/shared/ui/checkbox";
+} from "@/components/shared/ui/form";
+import { Input } from "@/components/shared/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/shared/ui/select";
+import { Checkbox } from "@/components/shared/ui/checkbox";
 
 export function CredentialForm() {
   const [isLoading, setIsLoading] = useState(false);
@@ -81,9 +87,9 @@ export function CredentialForm() {
   }
 
   return (
-    <div className="w-full max-w-md p-6 bg-card rounded-lg shadow-sm border border-border">
-      <h2 className="text-2xl font-semibold mb-6">Connexion à CyberArk</h2>
-      
+    <div className="w-full max-w-md rounded-lg border border-border bg-card p-6 shadow-sm">
+      <h2 className="mb-6 text-2xl font-semibold">Connexion à CyberArk</h2>
+
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           <FormField
@@ -99,7 +105,7 @@ export function CredentialForm() {
               </FormItem>
             )}
           />
-          
+
           <FormField
             control={form.control}
             name="username"
@@ -113,7 +119,7 @@ export function CredentialForm() {
               </FormItem>
             )}
           />
-          
+
           <FormField
             control={form.control}
             name="password"
@@ -127,7 +133,7 @@ export function CredentialForm() {
               </FormItem>
             )}
           />
-          
+
           <FormField
             control={form.control}
             name="authType"
@@ -151,29 +157,24 @@ export function CredentialForm() {
               </FormItem>
             )}
           />
-          
+
           <FormField
             control={form.control}
             name="concurrentSession"
             render={({ field }) => (
               <FormItem className="flex flex-row items-center gap-2 space-y-0">
                 <FormControl>
-                  <Checkbox
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                  />
+                  <Checkbox checked={field.value} onCheckedChange={field.onChange} />
                 </FormControl>
                 <FormLabel>Autoriser les sessions simultanées</FormLabel>
               </FormItem>
             )}
           />
-          
+
           {authError && (
-            <div className="p-3 text-sm text-white bg-destructive rounded">
-              {authError}
-            </div>
+            <div className="rounded bg-destructive p-3 text-sm text-white">{authError}</div>
           )}
-          
+
           <Button type="submit" className="w-full" disabled={isLoading}>
             {isLoading ? "Connexion en cours..." : "Se connecter"}
           </Button>

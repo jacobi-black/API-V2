@@ -8,7 +8,7 @@ import {
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
-} from '@/components/shared/ui/pagination";
+} from "@/components/shared/ui/pagination";
 
 export interface ResultsPaginationProps {
   currentPage: number;
@@ -24,31 +24,28 @@ export function ResultsPagination({
   onPageChange,
 }: ResultsPaginationProps) {
   const totalPages = Math.ceil(totalItems / pageSize);
-  
+
   // Si seulement une page ou moins, ne pas afficher la pagination
   if (totalPages <= 1) {
     return null;
   }
-  
+
   // Calculer la plage de pages à afficher (max 5 pages centrées sur la page courante)
   let startPage = Math.max(1, currentPage - 2);
-  let endPage = Math.min(totalPages, startPage + 4);
-  
+  const endPage = Math.min(totalPages, startPage + 4);
+
   // Ajuster si on est près de la fin
   if (endPage - startPage < 4) {
     startPage = Math.max(1, endPage - 4);
   }
-  
+
   // Générer les nombres de page
-  const pageNumbers = Array.from(
-    { length: endPage - startPage + 1 },
-    (_, i) => startPage + i
-  );
-  
+  const pageNumbers = Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i);
+
   // Calculer les indices des éléments affichés
   const startItem = (currentPage - 1) * pageSize + 1;
   const endItem = Math.min(startItem + pageSize - 1, totalItems);
-  
+
   return (
     <div className="mt-4 flex flex-col items-center gap-2">
       <Pagination>
@@ -57,16 +54,14 @@ export function ResultsPagination({
             <PaginationPrevious
               onClick={() => onPageChange(Math.max(1, currentPage - 1))}
               disabled={currentPage === 1}
-              className={currentPage === 1 ? "opacity-50 cursor-not-allowed" : ""}
+              className={currentPage === 1 ? "cursor-not-allowed opacity-50" : ""}
             />
           </PaginationItem>
-          
+
           {startPage > 1 && (
             <>
               <PaginationItem>
-                <PaginationLink onClick={() => onPageChange(1)}>
-                  1
-                </PaginationLink>
+                <PaginationLink onClick={() => onPageChange(1)}>1</PaginationLink>
               </PaginationItem>
               {startPage > 2 && (
                 <PaginationItem>
@@ -75,18 +70,15 @@ export function ResultsPagination({
               )}
             </>
           )}
-          
+
           {pageNumbers.map((page) => (
             <PaginationItem key={page}>
-              <PaginationLink
-                isActive={page === currentPage}
-                onClick={() => onPageChange(page)}
-              >
+              <PaginationLink isActive={page === currentPage} onClick={() => onPageChange(page)}>
                 {page}
               </PaginationLink>
             </PaginationItem>
           ))}
-          
+
           {endPage < totalPages && (
             <>
               {endPage < totalPages - 1 && (
@@ -101,17 +93,17 @@ export function ResultsPagination({
               </PaginationItem>
             </>
           )}
-          
+
           <PaginationItem>
             <PaginationNext
               onClick={() => onPageChange(Math.min(totalPages, currentPage + 1))}
               disabled={currentPage === totalPages}
-              className={currentPage === totalPages ? "opacity-50 cursor-not-allowed" : ""}
+              className={currentPage === totalPages ? "cursor-not-allowed opacity-50" : ""}
             />
           </PaginationItem>
         </PaginationContent>
       </Pagination>
-      
+
       <p className="text-sm text-muted-foreground">
         Affichage de {startItem} à {endItem} sur {totalItems} éléments
       </p>

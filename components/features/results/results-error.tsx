@@ -1,8 +1,15 @@
 "use client";
 
 import React from "react";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/shared/ui/card";
-import { Button } from '@/components/shared/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/shared/ui/card";
+import { Button } from "@/components/shared/ui/button";
 import { RefreshCw } from "lucide-react";
 
 export interface ResultsErrorProps {
@@ -14,11 +21,11 @@ export function ResultsError({ error, onRetry }: ResultsErrorProps) {
   // Analyser le code d'erreur potentiel
   const errorMatch = error.match(/Erreur (\d+)/);
   const errorCode = errorMatch ? parseInt(errorMatch[1]) : null;
-  
+
   // Déterminer le type d'erreur
   let errorType = "Erreur inconnue";
   let errorDescription = "Une erreur s'est produite lors de la requête";
-  
+
   if (errorCode) {
     switch (errorCode) {
       case 400:
@@ -55,34 +62,31 @@ export function ResultsError({ error, onRetry }: ResultsErrorProps) {
         break;
     }
   }
-  
+
   // Suggestions selon le type d'erreur
   let suggestions: string[] = [];
-  
+
   if (errorCode) {
     switch (errorCode) {
       case 400:
         suggestions = [
           "Vérifiez les paramètres de votre requête",
-          "Assurez-vous que les formats des valeurs sont corrects"
+          "Assurez-vous que les formats des valeurs sont corrects",
         ];
         break;
       case 401:
-        suggestions = [
-          "Reconnectez-vous à l'API",
-          "Votre session a peut-être expiré"
-        ];
+        suggestions = ["Reconnectez-vous à l'API", "Votre session a peut-être expiré"];
         break;
       case 403:
         suggestions = [
           "Vérifiez que votre compte a les permissions nécessaires",
-          "Contactez un administrateur pour obtenir les droits d'accès"
+          "Contactez un administrateur pour obtenir les droits d'accès",
         ];
         break;
       case 404:
         suggestions = [
           "Vérifiez que l'identifiant de la ressource est correct",
-          "La ressource a peut-être été supprimée"
+          "La ressource a peut-être été supprimée",
         ];
         break;
       case 500:
@@ -91,21 +95,18 @@ export function ResultsError({ error, onRetry }: ResultsErrorProps) {
         suggestions = [
           "Réessayez plus tard",
           "Vérifiez l'état du serveur CyberArk",
-          "Contactez l'administrateur système si le problème persiste"
+          "Contactez l'administrateur système si le problème persiste",
         ];
         break;
       default:
-        suggestions = [
-          "Essayez de rafraîchir la page",
-          "Vérifiez votre connexion internet"
-        ];
+        suggestions = ["Essayez de rafraîchir la page", "Vérifiez votre connexion internet"];
         break;
     }
   } else {
     suggestions = [
       "Vérifiez votre connexion internet",
       "Assurez-vous que l'URL de l'API est correcte",
-      "Réessayez plus tard"
+      "Réessayez plus tard",
     ];
   }
 
@@ -117,16 +118,16 @@ export function ResultsError({ error, onRetry }: ResultsErrorProps) {
       </CardHeader>
       <CardContent className="pt-6">
         <div className="mb-4">
-          <h3 className="text-sm font-medium mb-2">Message d'erreur :</h3>
-          <div className="p-3 bg-muted rounded-md text-sm font-mono whitespace-pre-wrap">
+          <h3 className="mb-2 text-sm font-medium">Message d'erreur :</h3>
+          <div className="whitespace-pre-wrap rounded-md bg-muted p-3 font-mono text-sm">
             {error}
           </div>
         </div>
-        
+
         {suggestions.length > 0 && (
           <div>
-            <h3 className="text-sm font-medium mb-2">Suggestions :</h3>
-            <ul className="list-disc pl-5 space-y-1 text-sm">
+            <h3 className="mb-2 text-sm font-medium">Suggestions :</h3>
+            <ul className="list-disc space-y-1 pl-5 text-sm">
               {suggestions.map((suggestion, index) => (
                 <li key={index}>{suggestion}</li>
               ))}
@@ -135,9 +136,9 @@ export function ResultsError({ error, onRetry }: ResultsErrorProps) {
         )}
       </CardContent>
       {onRetry && (
-        <CardFooter className="border-t bg-muted/50 flex justify-end gap-2">
+        <CardFooter className="flex justify-end gap-2 border-t bg-muted/50">
           <Button variant="outline" onClick={onRetry}>
-            <RefreshCw className="h-4 w-4 mr-2" />
+            <RefreshCw className="mr-2 h-4 w-4" />
             Réessayer
           </Button>
         </CardFooter>

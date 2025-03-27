@@ -1,5 +1,5 @@
 import { CyberArkCredentials, AuthType } from "@/types/auth";
-import { ensureTrailingSlash, handleFetchError } from '@/lib/utils/utils";
+import { ensureTrailingSlash, handleFetchError } from "@/lib/utils/utils";
 
 /**
  * Constantes pour les endpoints CyberArk
@@ -86,7 +86,7 @@ export async function authenticateCyberArk(credentials: CyberArkCredentials, aut
 
     // Le token est retourné directement comme une chaîne
     const token = await response.text();
-    
+
     // Créer une date d'expiration (20 minutes par défaut)
     const createdAt = new Date();
     const expiresAt = new Date(createdAt.getTime() + 20 * 60 * 1000);

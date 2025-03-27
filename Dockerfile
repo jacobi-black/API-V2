@@ -1,5 +1,5 @@
 # Stage 1: Dépendances et build
-FROM node:18-alpine AS builder
+FROM node:20-alpine AS builder
 
 # Définir le répertoire de travail
 WORKDIR /app
@@ -20,7 +20,7 @@ COPY . .
 RUN pnpm build
 
 # Stage 2: Image de production
-FROM node:18-alpine AS runner
+FROM node:20-alpine AS runner
 
 WORKDIR /app
 

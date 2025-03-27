@@ -2,9 +2,16 @@
 
 import React from "react";
 import { useEndpointStore } from "@/store/endpoint.store";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/shared/ui/card";
-import { Badge } from '@/components/shared/ui/badge";
-import { Button } from '@/components/shared/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/shared/ui/card";
+import { Badge } from "@/components/shared/ui/badge";
+import { Button } from "@/components/shared/ui/button";
 import { EndpointParamsForm } from "./endpoint-params";
 import { ArrowLeft, Play } from "lucide-react";
 
@@ -15,12 +22,7 @@ export interface EndpointDetailProps {
 }
 
 export function EndpointDetail({ onExecute, onReset, isLoading }: EndpointDetailProps) {
-  const { 
-    selectedEndpoint, 
-    selectedCategory,
-    selectCategory,
-    resetParams
-  } = useEndpointStore();
+  const { selectedEndpoint, selectedCategory, selectCategory, resetParams } = useEndpointStore();
 
   if (!selectedEndpoint) {
     return null;
@@ -44,26 +46,19 @@ export function EndpointDetail({ onExecute, onReset, isLoading }: EndpointDetail
   return (
     <Card className="w-full">
       <CardHeader className="pb-4">
-        <div className="flex justify-between items-start">
+        <div className="flex items-start justify-between">
           <div>
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              onClick={handleBack}
-              className="mb-2 -ml-2"
-            >
-              <ArrowLeft className="h-4 w-4 mr-1" />
+            <Button variant="ghost" size="sm" onClick={handleBack} className="-ml-2 mb-2">
+              <ArrowLeft className="mr-1 h-4 w-4" />
               Retour
             </Button>
             <CardTitle>{selectedEndpoint.name}</CardTitle>
             <CardDescription className="mt-1">
-              <Badge variant="outline" className="font-mono mr-2">
+              <Badge variant="outline" className="mr-2 font-mono">
                 {selectedEndpoint.fullPath}
               </Badge>
               {selectedEndpoint.category && (
-                <Badge variant="secondary">
-                  {selectedEndpoint.category}
-                </Badge>
+                <Badge variant="secondary">{selectedEndpoint.category}</Badge>
               )}
             </CardDescription>
           </div>
@@ -73,14 +68,14 @@ export function EndpointDetail({ onExecute, onReset, isLoading }: EndpointDetail
         <div className="mb-4">
           <p className="text-sm text-muted-foreground">{selectedEndpoint.description}</p>
         </div>
-        
-        <div className="bg-secondary/50 p-4 rounded-md mb-6">
-          <h3 className="text-sm font-medium mb-2">Requête API</h3>
-          <div className="font-mono text-xs bg-background p-2 rounded overflow-auto">
+
+        <div className="mb-6 rounded-md bg-secondary/50 p-4">
+          <h3 className="mb-2 text-sm font-medium">Requête API</h3>
+          <div className="overflow-auto rounded bg-background p-2 font-mono text-xs">
             {selectedEndpoint.fullPath}
           </div>
         </div>
-        
+
         <EndpointParamsForm endpoint={selectedEndpoint} />
       </CardContent>
       <CardFooter className="flex justify-end gap-2 pt-0">
@@ -88,7 +83,7 @@ export function EndpointDetail({ onExecute, onReset, isLoading }: EndpointDetail
           Réinitialiser
         </Button>
         <Button onClick={onExecute} disabled={isLoading}>
-          <Play className="h-4 w-4 mr-2" />
+          <Play className="mr-2 h-4 w-4" />
           {isLoading ? "Chargement..." : "Exécuter"}
         </Button>
       </CardFooter>

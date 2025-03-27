@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { Header } from '@/components/core/header";
-import { ThemeProvider } from '@/components/shared/theme/theme-provider";
+import { Header } from "@/components/core/header";
+import { ThemeProvider } from "@/components/shared/theme/theme-provider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -11,20 +11,14 @@ export const metadata: Metadata = {
   description: "Explorer et interagir avec les API CyberArk",
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="fr" suppressHydrationWarning>
       <body className={inter.className}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <div className="min-h-screen flex flex-col">
+          <div className="flex min-h-screen flex-col">
             <Header />
-            <main className="flex-1">
-              {children}
-            </main>
+            <main className="flex-1">{children}</main>
           </div>
         </ThemeProvider>
       </body>

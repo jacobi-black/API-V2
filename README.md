@@ -1,291 +1,313 @@
-### Déploiement
+# 🚀 CyberArk API Explorer 🚀
 
-L'application peut être déployée facilement en utilisant Docker :
+<div align="center">
+  
+  ![Version](https://img.shields.io/badge/version-0.2.0-blueviolet?style=for-the-badge)
+  ![License](https://img.shields.io/badge/license-MIT-success?style=for-the-badge)
+  ![Status](https://img.shields.io/badge/status-en%20développement-orange?style=for-the-badge)
 
-```bash
-# Construction du conteneur
-docker-compose build
+  <img src="public/logo.png" alt="CyberArk API Explorer Logo" width="200" height="auto"/>
+  
+  **_✨ Explorez les API CyberArk comme jamais auparavant ! ✨_**
+  
+</div>
 
-# Démarrage des services
-docker-compose up -d
-```
+## 💫 Vue d'ensemble
 
-Pour plus d'informations sur le déploiement, consultez [docs/deployment/DOCKER.md](docs/deployment/DOCKER.md).# CyberArk API Explorer
+**CyberArk API Explorer** est votre nouvelle interface magique pour interagir avec les API CyberArk ! Fini les scripts compliqués et les requêtes laborieuses - maintenant vous pouvez explorer, exécuter et exporter en quelques clics ! 🎮
 
-![Version](https://img.shields.io/badge/version-0.2.0-blue)
-![License](https://img.shields.io/badge/license-MIT-green)
-![Status](https://img.shields.io/badge/status-development-orange)
+> _"API Explorer est comme un superpouvoir pour les administrateurs CyberArk !"_ - Un utilisateur enthousiaste
 
-Une application web moderne permettant d'explorer et d'interagir avec les API CyberArk, avec exportation des résultats en formats CSV ou JSON.
+### 🔍 Problème résolu
 
-## Table des matières
+Les experts CyberArk sont confrontés à ces défis quotidiens :
 
-- [Vue d'ensemble](#vue-densemble)
-- [Fonctionnalités](#fonctionnalités)
-- [État du projet](#état-du-projet)
-- [Architecture](#architecture)
-- [Installation](#installation)
-- [Utilisation](#utilisation)
-- [Structure du projet](#structure-du-projet)
-- [Développement](#développement)
-- [Roadmap](#roadmap)
-- [Licence](#licence)
-- [Contact](#contact)
+- 📚 Explorer manuellement des API complexes
+- 🧩 Construire des requêtes API alambiquées
+- 🔑 Jongler avec l'authentification et les sessions
+- 📊 S'arracher les cheveux pour formater les données
 
-## Vue d'ensemble
+**Notre solution ?** Une application tout-en-un qui vous fait gagner des heures chaque semaine ! 💯
 
-CyberArk API Explorer est une interface utilisateur moderne qui vous permet d'interagir facilement avec toutes les API GET de CyberArk. Cette application simplifie la découverte, l'exploration et l'utilisation des API CyberArk sans avoir à écrire de code, tout en offrant des fonctionnalités d'exportation pour une utilisation ultérieure des données.
+### 🛠️ Stack Technologique
 
-### Problème résolu
+<table>
+  <tr>
+    <td align="center"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nextjs/nextjs-original.svg" width="40" height="40"/><br/>Next.js 15</td>
+    <td align="center"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg" width="40" height="40"/><br/>React 19</td>
+    <td align="center"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/typescript/typescript-original.svg" width="40" height="40"/><br/>TypeScript</td>
+    <td align="center"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/tailwindcss/tailwindcss-plain.svg" width="40" height="40"/><br/>Tailwind</td>
+  </tr>
+  <tr>
+    <td align="center"><img src="https://ui.shadcn.com/favicon.ico" width="40" height="40"/><br/>Shadcn UI</td>
+    <td align="center">🐻<br/>Zustand</td>
+    <td align="center">📋<br/>Zod</td>
+    <td align="center">🚄<br/>PNPM</td>
+  </tr>
+</table>
 
-Les administrateurs et développeurs travaillant avec CyberArk doivent souvent:
-- Explorer manuellement les API disponibles
-- Construire des requêtes API compliquées
-- Gérer l'authentification et les sessions
-- Formater et exporter les résultats pour analyse
+## ✅ Fonctionnalités
 
-CyberArk API Explorer offre une solution intégrée à ces problèmes, permettant aux utilisateurs de se concentrer sur l'utilisation des données plutôt que sur les aspects techniques de l'API.
+### 🎯 Déjà implémentées
 
-### Technologies clés
+<table>
+  <tr>
+    <td align="center">🔐</td>
+    <td><b>Authentification CyberArk</b></td>
+    <td>Connectez-vous à n'importe quelle instance CyberArk en toute sécurité</td>
+  </tr>
+  <tr>
+    <td align="center">🧭</td>
+    <td><b>Exploration d'endpoints</b></td>
+    <td>Interface intuitive pour découvrir les API disponibles</td>
+  </tr>
+  <tr>
+    <td align="center">🔧</td>
+    <td><b>Construction de requêtes</b></td>
+    <td>Créez vos requêtes avec une interface visuelle</td>
+  </tr>
+  <tr>
+    <td align="center">📊</td>
+    <td><b>Visualisation des résultats</b></td>
+    <td>Visualisez les réponses JSON avec style</td>
+  </tr>
+  <tr>
+    <td align="center">🔍</td>
+    <td><b>Recherche</b></td>
+    <td>Trouvez rapidement ce que vous cherchez</td>
+  </tr>
+  <tr>
+    <td align="center">📄</td>
+    <td><b>Pagination</b></td>
+    <td>Naviguez facilement dans les grands ensembles de données</td>
+  </tr>
+  <tr>
+    <td align="center">🔄</td>
+    <td><b>Proxy API</b></td>
+    <td>Adieu les problèmes CORS !</td>
+  </tr>
+  <tr>
+    <td align="center">📩</td>
+    <td><b>Exportation</b></td>
+    <td>Exportez en CSV et JSON pour vos analyses</td>
+  </tr>
+  <tr>
+    <td align="center">✨</td>
+    <td><b>UX/UI Améliorées</b></td>
+    <td>Interface utilisateur fluide et animations élégantes</td>
+  </tr>
+  <tr>
+    <td align="center">📝</td>
+    <td><b>Gestion d'état</b></td>
+    <td>Historique des requêtes et préférences personnalisées</td>
+  </tr>
+</table>
 
-- **Next.js 15** - Framework React avec Server Components
-- **React 19** - Bibliothèque UI
-- **TypeScript** - Typage statique
-- **Tailwind CSS** - Styling utilitaire
-- **Shadcn UI** - Composants UI
-- **Zustand** - Gestion d'état
-- **Zod** - Validation de schéma
+### 🚀 Bientôt disponibles
 
-## Fonctionnalités
+- 📚 **Collections** - Organisez vos requêtes comme un pro
+- 🔒 **Authentification persistante** - Gagnez encore plus de temps
+- ✏️ **Support API POST/PUT/DELETE** - Contrôle total des opérations CRUD
+- 📈 **Dashboards personnalisés** - Visualisations et rapports à votre goût
 
-### Implémentées (Phases 1-3)
+## 🌈 État du projet
 
-- **Authentification CyberArk** - Connexion à n'importe quelle instance CyberArk avec gestion sécurisée du token
-- **Exploration d'endpoints** - Interface intuitive pour parcourir les API disponibles
-- **Construction de requêtes** - Interface graphique pour paramétrer les requêtes API
-- **Visualisation des résultats** - Affichage formaté des réponses JSON avec options de visualisation
-- **Recherche dans les résultats** - Filtrage et mise en évidence des résultats
-- **Pagination** - Navigation facile dans les grands ensembles de données
-- **Proxy API** - Contourne les problèmes CORS courants avec les API CyberArk
-- **Exportation de données** - Export en CSV et JSON pour analyse ultérieure
-- **Améliorations UX/UI** - Optimisations de l'interface utilisateur et des animations
-- **Gestion d'état avancée** - Historique des requêtes et préférences utilisateur
+<div align="center">
+  <table>
+    <tr>
+      <td><b>Phase 1</b></td>
+      <td>Infrastructure</td>
+      <td>✅ Terminé !</td>
+    </tr>
+    <tr>
+      <td><b>Phase 2</b></td>
+      <td>Fonctionnalités de base</td>
+      <td>✅ Terminé !</td>
+    </tr>
+    <tr>
+      <td><b>Phase 3</b></td>
+      <td>Exportation et UX</td>
+      <td>✅ Terminé !</td>
+    </tr>
+    <tr>
+      <td><b>Phase 4</b></td>
+      <td>Tests et documentation</td>
+      <td>✅ Terminé !</td>
+    </tr>
+    <tr>
+      <td><b>Phase 5</b></td>
+      <td>Finalisation</td>
+      <td>📅 Planifiée</td>
+    </tr>
+  </table>
+</div>
 
-### Prévues (Phases futures)
+Pour connaître tous les détails, consultez notre [roadmap complète](docs/development/ROADMAP.md) ! 🗺️
 
-- **Collections** - Organisation des requêtes en collections
-- **Authentification persistante** - Option de sauvegarde des informations de connexion
-- **Support API POST/PUT/DELETE** - Support complet des opérations CRUD
-- **Dashboards personnalisés** - Visualisations et rapports personnalisés
+## 🏗️ Architecture
 
-## État du projet
+Notre application utilise une architecture moderne qui maximise les performances et l'expérience utilisateur :
 
-Le projet est actuellement en développement actif :
+<div align="center">
+  <img src="public/architecture.png" alt="Architecture" width="80%" />
+</div>
 
-- **Phase 1 (Infrastructure) ✅** - Configuration de l'environnement et authentification
-- **Phase 2 (Fonctionnalités de base) ✅** - Explorateur d'endpoints, requêtes API et affichage des résultats
-- **Phase 3 (Exportation et UX) ✅** - Export de données, améliorations UX/UI, gestion d'état
-- **Phase 4 (Tests et documentation) ✅** - Tests unitaires, intégration, E2E, et documentation complète
-- **Phase 5 (Finalisation) 📅** - Planifiée
+- 🚀 **Server Components** - React Server Components pour des performances optimales
+- 🔄 **API Proxy** - Contournement élégant des problèmes CORS
+- 🧠 **State Management** - Gestion d'état intelligente avec Zustand
+- 🎭 **Progressive Enhancement** - Chargement progressif avec React Suspense
 
-Pour suivre l'avancement détaillé, consultez le [document de roadmap](docs/development/ROADMAP.md).
+Pour les détails techniques, consultez notre [documentation d'architecture](docs/architecture/ARCHITECTURE.md) et nos [composants UI/UX](docs/architecture/UX_UI_COMPONENTS.md).
 
-## Architecture
-
-CyberArk API Explorer utilise une architecture moderne basée sur les principes suivants:
-
-- **Server Components** - Utilisation de React Server Components pour améliorer les performances
-- **API Proxy** - Contournement des problèmes CORS via un proxy Next.js
-- **State Management** - Gestion d'état côté client avec Zustand
-- **Progressive Enhancement** - Utilisation de React Suspense pour le chargement progressif
-
-L'application utilise une approche modulaire avec des composants spécialisés pour :
-- **Authentification** - Gestion sécurisée des tokens
-- **Exploration d'API** - Interface de navigation des endpoints
-- **Visualisation de données** - Affichage structuré des résultats
-- **Exportation** - Fonctionnalités d'exportation CSV et JSON
-- **Optimisation** - Métriques Web Vitals et performance
-
-Pour plus de détails, voir [docs/architecture/ARCHITECTURE.md](docs/architecture/ARCHITECTURE.md) et [docs/architecture/UX_UI_COMPONENTS.md](docs/architecture/UX_UI_COMPONENTS.md).
-
-## Installation
+## 🚀 Installation
 
 ### Prérequis
 
-- Node.js 20.x ou supérieur
-- pnpm 8.x ou supérieur
+- 📦 Node.js 20.x ou supérieur
+- 🚄 pnpm 8.x ou supérieur
 
-### Installation rapide
+### En un clin d'œil
 
 ```bash
-# Cloner le dépôt
+# Cloner ce trésor de code 💎
 git clone https://github.com/votre-organisation/cyberark-api-explorer.git
 cd cyberark-api-explorer
 
-# Installer les dépendances
+# Installer la magie ✨
 pnpm install
 
-# Démarrer le serveur de développement
+# Lancer la fusée 🚀
 pnpm dev
 ```
 
-L'application sera disponible à l'adresse [http://localhost:3000](http://localhost:3000).
+Votre application s'ouvrira sur [http://localhost:3000](http://localhost:3000) comme par magie ! ✨
 
-### Variables d'environnement
+### 🧙‍♂️ Variables d'environnement
 
-Créez un fichier `.env.local` à la racine du projet avec les variables suivantes:
+Créez votre potion magique `.env.local` :
 
 ```
 # Environnement
 NODE_ENV=development
 
-# Configuration du serveur
+# Configuration
 PORT=3000
 ```
 
-Pour des instructions d'installation détaillées, voir [docs/INSTALLATION.md](docs/INSTALLATION.md).
+Pour les alchimistes curieux : [instructions détaillées](docs/INSTALLATION.md).
 
-## Utilisation
+## 🎮 Guide d'utilisation
 
-### Connexion à CyberArk
+### 🔑 Connexion
 
-1. Accédez à la page d'accueil à l'adresse http://localhost:3000
-2. Entrez l'URL du serveur PVWA CyberArk (ex: https://cyberark.example.com)
-3. Saisissez vos identifiants (nom d'utilisateur et mot de passe)
-4. Sélectionnez la méthode d'authentification appropriée (CyberArk, LDAP, Windows, RADIUS)
-5. Cliquez sur "Se connecter"
+1. Rendez-vous sur votre portail à http://localhost:3000
+2. Entrez l'URL du serveur CyberArk
+3. Saisissez vos identifiants secrets
+4. Choisissez votre méthode d'authentification préférée
+5. Cliquez sur "Se connecter" et que la magie opère !
 
-### Exploration des API
+### 🗺️ Exploration
 
-1. Après connexion, parcourez les catégories d'API disponibles (Comptes, Coffres, Utilisateurs, etc.)
-2. Sélectionnez un endpoint spécifique pour voir ses détails
-3. Configurez les paramètres de requête selon vos besoins
-4. Cliquez sur "Exécuter" pour voir les résultats
+1. Naviguez dans les catégories d'API comme un explorateur
+2. Sélectionnez un endpoint pour révéler ses secrets
+3. Configurez votre requête comme vous le souhaitez
+4. Appuyez sur "Exécuter" et observez la magie !
 
-### Visualisation des résultats
+### 📊 Visualisation & Export
 
-1. Les résultats s'affichent dans un panneau dédié
-2. Choisissez le mode de visualisation (JSON, Tableau, Brut)
-3. Utilisez la barre de recherche pour filtrer les résultats
-4. Naviguez dans les grands ensembles de données avec la pagination
-5. Copiez ou téléchargez les résultats selon vos besoins
+1. Admirez vos résultats dans le panneau dédié
+2. Basculez entre différentes vues (JSON, Tableau, Brut)
+3. Filtrez comme un pro avec la barre de recherche
+4. Naviguez dans vos données avec notre pagination intuitive
+5. Exportez en un clic pour impressionner vos collègues
 
-Pour un guide d'utilisation complet, voir [docs/USAGE.md](docs/USAGE.md).
+Pour devenir un véritable maître : [guide complet](docs/USAGE.md).
 
-## Structure du projet
+## 📁 Structure du projet
 
 ```
 API_V2/
-├── app/                      # Next.js App Router
-│   ├── api/                  # API Routes (proxy)
-│   │   └── cyberark/         # Endpoints CyberArk
-│   ├── dashboard/            # Dashboard pages
-│   └── ...                   # Other app pages
-├── components/               # Composants React
-│   ├── core/                 # Composants de base (layout, etc.)
-│   ├── features/             # Composants par fonctionnalité
-│   │   ├── auth/             # Composants d'authentification
-│   │   ├── endpoints/        # Composants pour explorer les endpoints
-│   │   ├── results/          # Composants pour afficher les résultats
-│   │   └── history/          # Composants liés à l'historique
-│   └── shared/               # Composants partagés
-│       ├── ui/               # Composants UI (Shadcn)
-│       └── theme/            # Composants de thème
-├── lib/                      # Bibliothèques et utilitaires
-│   ├── analytics/            # Outils d'analyse (Web Vitals)
-│   ├── config/               # Configuration
-│   ├── cyberark/             # Utilitaires CyberArk
-│   └── utils/                # Utilitaires généraux et export
-├── hooks/                    # Hooks React personnalisés
-│   └── api/                  # Hooks liés aux API
-├── types/                    # Définitions de types TypeScript
-├── store/                    # Stores Zustand
-├── schemas/                  # Schémas Zod
-├── scripts/                  # Scripts utilitaires
-├── tests/                    # Tests
-│   ├── unit/                 # Tests unitaires
-│   ├── integration/          # Tests d'intégration
-│   └── e2e/                  # Tests end-to-end
-├── public/                   # Ressources statiques
-└── docs/                     # Documentation
-    └── rules/                # Règles et conventions
+├── 🏠 app/                   # Application Next.js
+├── 🧩 components/            # Composants React
+│   ├── 🧠 core/              # Composants fondamentaux
+│   ├── ✨ features/          # Composants par fonctionnalité
+│   └── 🎨 shared/            # Composants partagés
+├── 🛠️ lib/                   # Bibliothèques et utilitaires
+├── 🪝 hooks/                 # Hooks React personnalisés
+├── 📦 store/                 # Gestion d'état avec Zustand
+├── 📋 schemas/               # Schémas de validation Zod
+├── 🧪 tests/                 # Tests (unitaires, intégration, E2E)
+└── 📚 docs/                  # Documentation
 ```
 
-## Développement
+## 🛠️ Développement
 
-### Scripts disponibles
+### ⚡ Scripts magiques
 
 ```bash
-# Démarrer le serveur de développement
+# Démarrer votre aventure de développement
 pnpm dev
 
-# Construire l'application pour la production
+# Construire votre chef-d'œuvre pour la production
 pnpm build
 
-# Démarrer l'application en mode production
+# Lancer votre application en mode production
 pnpm start
 
-# Lancer les tests
+# Tester votre création
 pnpm test
 
-# Vérifier le formatage et le linting
+# Vérifier que tout est bien rangé
 pnpm lint
+
+# Mettre à jour les imports après réorganisation
+pnpm update-imports
 ```
 
-### Conventions de code
+### 📏 Conventions de code
 
-- **Nommage des fichiers**:
-  - Composants React: `PascalCase.tsx`
-  - Utilitaires et hooks: `kebab-case.ts`
-  - Types et interfaces: `kebab-case.d.ts`
-  - Stores Zustand: `kebab-case.store.ts`
-  - Schémas Zod: `kebab-case.schema.ts`
+Nous suivons ces règles pour garder notre code élégant :
 
-- **Structure des composants**:
-  - Utiliser `export function` sans default exports
-  - Props comme premier argument avec type inline pour 1-2 props
-  - Pour 3+ props, créer type nommé `PascalCaseProps`
+- 📁 **Nommage** : `PascalCase` pour les composants, `kebab-case` pour le reste
+- 🧩 **Composants** : Toujours `export function` sans default exports
+- 🔄 **Server/Client** : Server Components TOUJOURS `async`
 
-- **Distinctions Server/Client**:
-  - Server Components TOUJOURS `async`
-  - Client Components TOUJOURS avec `'use client'` en haut
-  - Jamais de hooks dans Server Components
+## 🤝 Contribution
 
-Pour plus de détails, voir le [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md).
+Nous adorons les nouvelles idées ! Voici comment contribuer :
 
-## Roadmap
+1. 🍴 Forkez le projet
+2. 🔄 Créez votre branche (`git checkout -b feature/AmazingFeature`)
+3. 💾 Committez vos changements (`git commit -m 'Add some AmazingFeature'`)
+4. 📤 Poussez vers la branche (`git push origin feature/AmazingFeature`)
+5. 🔍 Ouvrez une Pull Request
 
-### Phase 1: Infrastructure (Terminée ✅)
-- ✅ Configuration du projet Next.js/TypeScript/Tailwind
-- ✅ Structure de dossiers et architecture
-- ✅ Authentification CyberArk (formulaire et API proxy)
+## 📦 Déploiement
 
-### Phase 2: Fonctionnalités de base (Terminée ✅)
-- ✅ Explorateur d'endpoints
-- ✅ Requêtes API vers CyberArk
-- ✅ Affichage des résultats
+Déployez en production en un clin d'œil avec Docker :
 
-### Phase 3: Exportation et UX (Terminée ✅)
-- ✅ Fonctionnalités d'exportation (CSV/JSON)
-- ✅ Améliorations UX/UI
-- ✅ Gestion d'état globale
+```bash
+# Construisez votre vaisseau spatial 🚀
+docker-compose build
 
-### Phase 4: Tests et documentation (Terminée ✅)
-- ✅ Tests complets (unitaires, intégration, E2E)
-- ✅ Documentation améliorée
-- ✅ Préparation au déploiement (Docker, CI/CD)
+# Lancez-le dans l'espace ! 🌌
+docker-compose up -d
+```
 
-### Phase 5: Finalisation (À venir)
-- 📅 Revue de code et refactoring
-- 📅 Tests de sécurité
-- 📅 Livraison V1
+Pour les détails de lancement : [guide de déploiement](docs/deployment/DOCKER.md).
 
-Pour plus de détails, consultez la [feuille de route complète](docs/development/ROADMAP.md).
+## 📜 Licence
 
-## Licence
+Ce projet est sous licence MIT - voir le fichier [LICENSE](LICENSE) pour plus de détails.
 
-Ce projet est sous licence MIT. Voir le fichier [LICENSE](LICENSE) pour plus de détails.
+---
 
-## Contact
-
-Pour toute question ou suggestion, veuillez contacter l'équipe de développement à [email@exemple.com](mailto:email@exemple.com).
+<div align="center">
+  
+  **Fait avec ❤️ par l'équipe CyberArk API Explorer**
+  
+  [ [🌐 Site Web](https://example.com) ] • [ [🐙 GitHub](https://github.com) ] • [ [📧 Contact](mailto:contact@example.com) ]
+  
+  <sub>Propulsé par du café ☕ et de l'enthousiasme ✨</sub>
+  
+</div>

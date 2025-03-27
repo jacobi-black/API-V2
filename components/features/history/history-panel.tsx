@@ -1,36 +1,36 @@
 "use client";
 
 import { useState } from "react";
-import { 
-  Sheet, 
-  SheetContent, 
-  SheetHeader, 
-  SheetTitle, 
-  SheetTrigger 
-} from '@/components/shared/ui/sheet";
-import { Button } from '@/components/shared/ui/button";
-import { Input } from '@/components/shared/ui/input";
-import { Badge } from '@/components/shared/ui/badge";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/shared/ui/sheet";
+import { Button } from "@/components/shared/ui/button";
+import { Input } from "@/components/shared/ui/input";
+import { Badge } from "@/components/shared/ui/badge";
 import { Clock, Search, Star, StarOff, Trash2, RotateCw } from "lucide-react";
 import { useHistoryStore } from "@/store/history.store";
 import { useEndpointStore } from "@/store/endpoint.store";
-import { formatDate } from '@/lib/utils/utils";
+import { formatDate } from "@/lib/utils/utils";
 
 export function HistoryPanel() {
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
-  
+
   const { entries, favorites, toggleFavorite, removeEntry, clearHistory } = useHistoryStore();
   const { selectEndpoint } = useEndpointStore();
-  
+
   // Filtrer les entrées
-  const filteredEntries = entries.filter(entry => {
+  const filteredEntries = entries.filter((entry) => {
     // Filtrer par favoris si nécessaire
     if (showFavoritesOnly && !favorites.includes(entry.id)) {
       return false;
     }
-    
+
     // Filtrer par terme de recherche
     if (searchTerm) {
       const searchLower = searchTerm.toLowerCase();
@@ -40,46 +40,46 @@ export function HistoryPanel() {
         entry.path.toLowerCase().includes(searchLower)
       );
     }
-    
+
     return true;
   });
-  
+
   // Sélectionner un endpoint à partir de l'historique
   const handleSelectHistoryItem = (entry: any) => {
     selectEndpoint(entry.endpointId);
     setIsOpen(false);
   };
-  
+
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
       <SheetTrigger asChild>
         <Button variant="ghost" size="icon" className="relative">
           <Clock className="h-5 w-5" />
           {entries.length > 0 && (
-            <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-[10px]">
+            <Badge className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center p-0 text-[10px]">
               {entries.length > 99 ? "99+" : entries.length}
             </Badge>
           )}
         </Button>
       </SheetTrigger>
-      <SheetContent side="right" className="w-[400px] sm:w-[540px] p-0">
+      <SheetContent side="right" className="w-[400px] p-0 sm:w-[540px]">
         <SheetHeader className="p-6 pb-2">
-          <div className="flex justify-between items-center">
+          <div className="flex items-center justify-between">
             <SheetTitle>Historique des requêtes</SheetTitle>
-            <Button 
-              variant="ghost" 
-              size="sm" 
+            <Button
+              variant="ghost"
+              size="sm"
               className="h-8 px-2 text-muted-foreground"
               onClick={() => clearHistory()}
             >
-              <Trash2 className="h-4 w-4 mr-1" />
+              <Trash2 className="mr-1 h-4 w-4" />
               <span className="text-xs">Effacer</span>
             </Button>
           </div>
         </SheetHeader>
-        
-        <div className="p-6 pt-2 pb-0">
-          <div className="flex items-center gap-2 mb-4">
+
+        <div className="p-6 pb-0 pt-2">
+          <div className="mb-4 flex items-center gap-2">
             <div className="relative flex-1">
               <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input
@@ -99,33 +99,33 @@ export function HistoryPanel() {
             </Button>
           </div>
         </div>
-        
-        <div className="px-6 overflow-y-auto h-[calc(100vh-150px)]">
+
+        <div className="h-[calc(100vh-150px)] overflow-y-auto px-6">
           {filteredEntries.length === 0 ? (
-            <div className="text-center py-8 text-muted-foreground">
-              {entries.length === 0 
-                ? "Aucune requête dans l'historique" 
+            <div className="py-8 text-center text-muted-foreground">
+              {entries.length === 0
+                ? "Aucune requête dans l'historique"
                 : "Aucune requête ne correspond à votre recherche"}
             </div>
           ) : (
             <div className="space-y-3 pb-6">
               {filteredEntries.map((entry) => (
-                <div 
-                  key={entry.id} 
-                  className="border rounded-lg p-3 hover:bg-accent/40 transition-colors cursor-pointer"
+                <div
+                  key={entry.id}
+                  className="cursor-pointer rounded-lg border p-3 transition-colors hover:bg-accent/40"
                 >
-                  <div className="flex justify-between items-start mb-1">
+                  <div className="mb-1 flex items-start justify-between">
                     <div>
-                      <h3 className="font-medium text-sm">{entry.endpointName}</h3>
-                      <p className="text-xs font-mono text-muted-foreground truncate max-w-[350px]">
+                      <h3 className="text-sm font-medium">{entry.endpointName}</h3>
+                      <p className="max-w-[350px] truncate font-mono text-xs text-muted-foreground">
                         {entry.path}
                       </p>
                     </div>
                     <div className="flex gap-1">
-                      <Button 
-                        variant="ghost" 
-                        size="icon" 
-                        className="h-6 w-6" 
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-6 w-6"
                         onClick={(e) => {
                           e.stopPropagation();
                           toggleFavorite(entry.id);
@@ -137,10 +137,10 @@ export function HistoryPanel() {
                           <StarOff className="h-3.5 w-3.5" />
                         )}
                       </Button>
-                      <Button 
-                        variant="ghost" 
-                        size="icon" 
-                        className="h-6 w-6" 
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-6 w-6"
                         onClick={(e) => {
                           e.stopPropagation();
                           removeEntry(entry.id);
@@ -150,24 +150,22 @@ export function HistoryPanel() {
                       </Button>
                     </div>
                   </div>
-                  
-                  <div className="flex justify-between items-center mt-2">
+
+                  <div className="mt-2 flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <Badge variant="outline" className="text-[10px] h-5">
+                      <Badge variant="outline" className="h-5 text-[10px]">
                         {entry.category}
                       </Badge>
                       {entry.success ? (
-                        <Badge className="bg-green-500 text-[10px] h-5">
-                          Succès
-                        </Badge>
+                        <Badge className="h-5 bg-green-500 text-[10px]">Succès</Badge>
                       ) : (
-                        <Badge variant="destructive" className="text-[10px] h-5">
+                        <Badge variant="destructive" className="h-5 text-[10px]">
                           Échec
                         </Badge>
                       )}
                       {entry.resultCount !== undefined && entry.resultCount > 0 && (
-                        <Badge variant="secondary" className="text-[10px] h-5">
-                          {entry.resultCount} résultat{entry.resultCount > 1 ? 's' : ''}
+                        <Badge variant="secondary" className="h-5 text-[10px]">
+                          {entry.resultCount} résultat{entry.resultCount > 1 ? "s" : ""}
                         </Badge>
                       )}
                     </div>
@@ -175,15 +173,15 @@ export function HistoryPanel() {
                       {formatDate(entry.timestamp)}
                     </span>
                   </div>
-                  
+
                   <div className="mt-2 flex justify-end">
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
+                    <Button
+                      variant="outline"
+                      size="sm"
                       className="h-7 text-xs"
                       onClick={() => handleSelectHistoryItem(entry)}
                     >
-                      <RotateCw className="h-3 w-3 mr-1" />
+                      <RotateCw className="mr-1 h-3 w-3" />
                       Réutiliser
                     </Button>
                   </div>

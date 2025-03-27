@@ -18,16 +18,13 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '18'
-          cache: 'pnpm'
-
-      - name: Install pnpm
-        run: npm install -g pnpm
+          cache: 'npm'
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: npm ci
 
       - name: Run linting
-        run: pnpm lint
+        run: npm run lint
 
   test:
     name: Test
@@ -40,19 +37,16 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '18'
-          cache: 'pnpm'
-
-      - name: Install pnpm
-        run: npm install -g pnpm
+          cache: 'npm'
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: npm ci
 
       - name: Run tests
-        run: pnpm test
+        run: npm test
 
       - name: Generate coverage report
-        run: pnpm test:coverage
+        run: npm test -- --coverage
 
       - name: Upload coverage reports
         uses: codecov/codecov-action@v3
@@ -73,16 +67,13 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '18'
-          cache: 'pnpm'
-
-      - name: Install pnpm
-        run: npm install -g pnpm
+          cache: 'npm'
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: npm ci
 
       - name: Build application
-        run: pnpm build
+        run: npm run build
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v3
@@ -124,7 +115,7 @@ jobs:
             ${{ secrets.DOCKER_HUB_USERNAME }}/cyberark-api-explorer:latest
             ${{ secrets.DOCKER_HUB_USERNAME }}/cyberark-api-explorer:${{ github.sha }}
 
-      # Exemple de déploiement sur un serveur (adapt selon votre infrastructure)
+      # Exemple de déploiement sur un serveur
       - name: Deploy to production server
         uses: appleboy/ssh-action@v0.1.10
         with:

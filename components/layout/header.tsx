@@ -4,7 +4,8 @@ import React from "react";
 import Link from "next/link";
 import { useAuthStore } from "@/store/auth.store";
 import { Button } from "@/components/ui/button";
-import { LogOut } from "lucide-react";
+import { ThemeToggle } from "@/components/theme/theme-toggle";
+import { LogOut, Database } from "lucide-react";
 
 export function Header() {
   const { isAuthenticated, session, clearSession } = useAuthStore();
@@ -40,24 +41,27 @@ export function Header() {
   };
   
   return (
-    <header className="bg-background border-b">
+    <header className="bg-background border-b sticky top-0 z-10">
       <div className="container mx-auto p-4 flex justify-between items-center">
-        <Link href="/" className="text-2xl font-bold">
-          CyberArk API Explorer
+        <Link href="/" className="flex items-center gap-2 text-2xl font-bold">
+          <Database className="h-6 w-6" />
+          <span>CyberArk API Explorer</span>
         </Link>
         
-        <nav className="flex items-center space-x-4">
+        <nav className="flex items-center gap-4">
+          <ThemeToggle />
+          
           {isAuthenticated ? (
-            <>
-              <div className="text-sm text-muted-foreground mr-2">
+            <div className="flex items-center gap-4">
+              <div className="text-sm text-muted-foreground hidden md:block">
                 <span className="mr-1">Connecté à</span>
                 <span className="font-mono">{session?.baseUrl}</span>
               </div>
               <Button size="sm" variant="outline" onClick={handleLogout}>
                 <LogOut className="h-4 w-4 mr-2" />
-                Déconnexion
+                <span>Déconnexion</span>
               </Button>
-            </>
+            </div>
           ) : (
             <Link href="/" passHref>
               <Button size="sm">Se connecter</Button>

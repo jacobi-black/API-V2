@@ -5,11 +5,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ChevronDown, ChevronRight, Copy, Download, Search } from "lucide-react";
+import { ChevronDown, ChevronRight, Copy, Search } from "lucide-react";
 import { useEndpointStore } from "@/store/endpoint.store";
 import { ResultsError } from "./results-error";
 import { ResultsSkeleton } from "./results-skeleton";
 import { ResultsPagination } from "./results-pagination";
+import { ResultsExport } from "./results-export";
 
 export interface ResultsViewerProps {
   data: any;
@@ -67,22 +68,14 @@ export function ResultsViewer({ data, error, isLoading, onRetry }: ResultsViewer
 
   const copyToClipboard = () => {
     if (data) {
-      navigator.clipboard.writeText(JSON.stringify(data, null, 2));
-    }
-  };
-
-  // Téléchargement des données JSON
-  const downloadJSON = () => {
-    if (data) {
-      const jsonBlob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
-      const url = URL.createObjectURL(jsonBlob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `cyberark-api-${new Date().toISOString().replace(/:/g, '-')}.json`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
+      navigator.clipboard.writeText(JSON.stringify(data, null, 2))
+        .then(() => {
+          // On pourrait ajouter un toast ici pour confirmer
+          console.log("Copié dans le presse-papier");
+        })
+        .catch(err => {
+          console.error("Erreur de copie:", err);
+        });
     }
   };
 
@@ -131,10 +124,11 @@ export function ResultsViewer({ data, error, isLoading, onRetry }: ResultsViewer
               <Copy className="h-4 w-4 mr-1" />
               Copier
             </Button>
-            <Button size="sm" variant="outline" onClick={downloadJSON}>
-              <Download className="h-4 w-4 mr-1" />
-              Télécharger
-            </Button>
+            <ResultsExport 
+              data={data} 
+              isArray={isArray} 
+              endpointName={selectedEndpoint?.id || "results"}
+            />
           </div>
         </div>
       </CardHeader>

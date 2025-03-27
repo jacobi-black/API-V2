@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
 import { AuthType } from "@/types/auth";
 import { CredentialsSchema, CredentialsSchemaType } from "@/schemas/auth.schema";
 import { useAuthStore } from "@/store/auth.store";
@@ -28,10 +27,19 @@ import {
 } from "@/components/shared/ui/select";
 import { Checkbox } from "@/components/shared/ui/checkbox";
 
-export function CredentialForm() {
+interface CredentialFormProps {
+  onSuccess?: () => void;
+  className?: string;
+  compact?: boolean;
+}
+
+export function CredentialForm({
+  onSuccess,
+  className = "",
+  compact = false,
+}: CredentialFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const { setSession, setCredentials, setAuthError, authError } = useAuthStore();
-  const router = useRouter();
 
   const form = useForm<CredentialsSchemaType>({
     resolver: zodResolver(CredentialsSchema),
@@ -39,7 +47,7 @@ export function CredentialForm() {
       baseUrl: "",
       username: "",
       password: "",
-      authType: AuthType.CyberArk,
+      authType: AuthType.CYBERARK,
       concurrentSession: false,
     },
   });
@@ -63,7 +71,8 @@ export function CredentialForm() {
         throw new Error(result.error || "Échec de l'authentification");
       }
 
-      // Stocker les informations sans le mot de passe
+      // Stocker les informations sans le mot de passe en ignorant l'avertissement du linter
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { password, ...safeCredentials } = data;
       setCredentials(safeCredentials);
 
@@ -76,8 +85,10 @@ export function CredentialForm() {
         username: data.username,
       });
 
-      // Rediriger vers le dashboard
-      router.push("/dashboard");
+      // Appeler le callback de succès si fourni
+      if (onSuccess) {
+        onSuccess();
+      }
     } catch (error) {
       setAuthError(error instanceof Error ? error.message : "Erreur inconnue");
       console.error("Erreur d'authentification:", error);
@@ -87,8 +98,10 @@ export function CredentialForm() {
   }
 
   return (
-    <div className="w-full max-w-md rounded-lg border border-border bg-card p-6 shadow-sm">
-      <h2 className="mb-6 text-2xl font-semibold">Connexion à CyberArk</h2>
+    <div
+      className={`rounded-lg border border-border bg-card p-${compact ? "4" : "6"} shadow-sm ${className}`}
+    >
+      {!compact && <h2 className="mb-6 text-2xl font-semibold">Connexion à CyberArk</h2>}
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -147,7 +160,7 @@ export function CredentialForm() {
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value={AuthType.CyberArk}>CyberArk</SelectItem>
+                    <SelectItem value={AuthType.CYBERARK}>CyberArk</SelectItem>
                     <SelectItem value={AuthType.LDAP}>LDAP</SelectItem>
                     <SelectItem value={AuthType.Windows}>Windows</SelectItem>
                     <SelectItem value={AuthType.RADIUS}>RADIUS</SelectItem>

@@ -1,22 +1,15 @@
 /**
  * Web Vitals - Optimisation des Core Web Vitals
- * 
+ *
  * Ce module implémente la collecte et le rapport des Core Web Vitals
  * pour optimiser et surveiller les performances de l'application.
- * 
+ *
  * Référence: https://web.dev/vitals/
  */
 
-import { 
-  getCLS, 
-  getFID, 
-  getLCP, 
-  getFCP, 
-  getTTFB,
-  type Metric 
-} from 'web-vitals';
+import { getCLS, getFID, getLCP, getFCP, getTTFB, type Metric } from "web-vitals";
 
-const ANALYTICS_ENDPOINT = '/api/vitals';
+const ANALYTICS_ENDPOINT = "/api/vitals";
 
 // Types des métriques Web Vitals
 export type WebVitalsMetric = {
@@ -24,27 +17,27 @@ export type WebVitalsMetric = {
   name: string;
   value: number;
   delta: number;
-  rating: 'good' | 'needs-improvement' | 'poor';
+  rating: "good" | "needs-improvement" | "poor";
 };
 
 /**
  * Détermine la classification de la métrique (good, needs-improvement, poor)
  * en fonction des seuils de Google
  */
-const getRating = (name: string, value: number): 'good' | 'needs-improvement' | 'poor' => {
+const getRating = (name: string, value: number): "good" | "needs-improvement" | "poor" => {
   switch (name) {
-    case 'CLS':
-      return value <= 0.1 ? 'good' : value <= 0.25 ? 'needs-improvement' : 'poor';
-    case 'FID':
-      return value <= 100 ? 'good' : value <= 300 ? 'needs-improvement' : 'poor';
-    case 'LCP':
-      return value <= 2500 ? 'good' : value <= 4000 ? 'needs-improvement' : 'poor';
-    case 'FCP':
-      return value <= 1800 ? 'good' : value <= 3000 ? 'needs-improvement' : 'poor';
-    case 'TTFB':
-      return value <= 800 ? 'good' : value <= 1800 ? 'needs-improvement' : 'poor';
+    case "CLS":
+      return value <= 0.1 ? "good" : value <= 0.25 ? "needs-improvement" : "poor";
+    case "FID":
+      return value <= 100 ? "good" : value <= 300 ? "needs-improvement" : "poor";
+    case "LCP":
+      return value <= 2500 ? "good" : value <= 4000 ? "needs-improvement" : "poor";
+    case "FCP":
+      return value <= 1800 ? "good" : value <= 3000 ? "needs-improvement" : "poor";
+    case "TTFB":
+      return value <= 800 ? "good" : value <= 1800 ? "needs-improvement" : "poor";
     default:
-      return 'good';
+      return "good";
   }
 };
 
@@ -52,8 +45,8 @@ const getRating = (name: string, value: number): 'good' | 'needs-improvement' | 
  * Récupère le type de navigation de la page
  */
 const getNavigationType = (): string => {
-  const nav = window.performance?.getEntriesByType?.('navigation')?.[0] as any;
-  return nav?.type || 'navigate';
+  const nav = window.performance?.getEntriesByType?.("navigation")?.[0] as any;
+  return nav?.type || "navigate";
 };
 
 /**
@@ -62,8 +55,8 @@ const getNavigationType = (): string => {
 const sendToAnalytics = async (metric: WebVitalsMetric) => {
   try {
     // Ne pas envoyer les métriques en développement
-    if (process.env.NODE_ENV === 'development') {
-      console.log('[Web Vitals]', metric);
+    if (process.env.NODE_ENV === "development") {
+      console.log("[Web Vitals]", metric);
       return;
     }
 
@@ -84,15 +77,15 @@ const sendToAnalytics = async (metric: WebVitalsMetric) => {
       // Fallback à fetch avec keepalive
       await fetch(ANALYTICS_ENDPOINT, {
         body,
-        method: 'POST',
+        method: "POST",
         keepalive: true,
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       });
     }
   } catch (error) {
-    console.error('[Web Vitals] Error sending metrics:', error);
+    console.error("[Web Vitals] Error sending metrics:", error);
   }
 };
 
@@ -102,7 +95,7 @@ const sendToAnalytics = async (metric: WebVitalsMetric) => {
 const reportWebVitals = (metric: Metric) => {
   const { name, id, value, delta } = metric;
   const rating = getRating(name, value);
-  
+
   const webVitalsMetric: WebVitalsMetric = {
     id,
     name,
@@ -110,7 +103,7 @@ const reportWebVitals = (metric: Metric) => {
     delta,
     rating,
   };
-  
+
   sendToAnalytics(webVitalsMetric);
 };
 
@@ -119,20 +112,20 @@ const reportWebVitals = (metric: Metric) => {
  */
 export const initWebVitals = () => {
   // Ne pas capturer les métriques en mode SSR
-  if (typeof window === 'undefined') return;
-  
+  if (typeof window === "undefined") return;
+
   // Largest Contentful Paint
   getLCP(reportWebVitals);
-  
+
   // First Input Delay
   getFID(reportWebVitals);
-  
+
   // Cumulative Layout Shift
   getCLS(reportWebVitals);
-  
+
   // First Contentful Paint (bonus)
   getFCP(reportWebVitals);
-  
+
   // Time to First Byte (bonus)
   getTTFB(reportWebVitals);
 };

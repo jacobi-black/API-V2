@@ -1,4 +1,4 @@
-import { cn, formatDate, ensureTrailingSlash } from '@/lib/utils/utils";
+import { cn, formatDate, ensureTrailingSlash } from "@/lib/utils/utils";
 
 describe("Utilitaires de base", () => {
   describe("cn (utility de classe)", () => {
@@ -27,7 +27,7 @@ describe("Utilitaires de base", () => {
       // Utiliser une date fixe pour tester
       const testDate = new Date(2023, 5, 15, 14, 30); // 15 juin 2023, 14:30
       const formattedDate = formatDate(testDate);
-      
+
       // Format attendu : DD/MM/YYYY, HH:MM
       expect(formattedDate).toBe("15/06/2023, 14:30");
     });
@@ -36,7 +36,7 @@ describe("Utilitaires de base", () => {
       // ISO string
       const isoString = "2023-06-15T14:30:00Z";
       expect(formatDate(isoString)).toMatch(/\d{2}\/\d{2}\/\d{4}, \d{2}:\d{2}/);
-      
+
       // Timestamp
       const timestamp = new Date(2023, 5, 15, 14, 30).getTime();
       expect(formatDate(timestamp)).toMatch(/\d{2}\/\d{2}\/\d{4}, \d{2}:\d{2}/);
@@ -46,18 +46,20 @@ describe("Utilitaires de base", () => {
   describe("ensureTrailingSlash", () => {
     it("doit ajouter un slash final s'il n'existe pas", () => {
       expect(ensureTrailingSlash("https://example.com")).toBe("https://example.com/");
-      expect(ensureTrailingSlash("https://api.cyberark.cloud/api")).toBe("https://api.cyberark.cloud/api/");
+      expect(ensureTrailingSlash("https://api.cyberark.cloud/api")).toBe(
+        "https://api.cyberark.cloud/api/"
+      );
     });
 
     it("ne doit pas ajouter de slash si un slash existe déjà", () => {
       expect(ensureTrailingSlash("https://example.com/")).toBe("https://example.com/");
-      expect(ensureTrailingSlash("https://api.cyberark.cloud/api/")).toBe("https://api.cyberark.cloud/api/");
+      expect(ensureTrailingSlash("https://api.cyberark.cloud/api/")).toBe(
+        "https://api.cyberark.cloud/api/"
+      );
     });
 
     it("doit gérer les chaînes vides", () => {
       expect(ensureTrailingSlash("")).toBe("/");
     });
   });
-
-
 });

@@ -1,14 +1,23 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import { useAuthStore } from "@/store/auth.store";
 import { Button } from "@/components/shared/ui/button";
 import { ThemeToggle } from "@/components/shared/theme/theme-toggle";
-import { LogOut, Database } from "lucide-react";
+import { LogOut, Database, LogIn } from "lucide-react";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/shared/ui/sheet";
+import { CredentialForm } from "@/components/features/auth/credential-form";
 
 export function Header() {
   const { isAuthenticated, session, clearSession } = useAuthStore();
+  const [isLoginSheetOpen, setIsLoginSheetOpen] = useState(false);
 
   const handleLogout = async () => {
     if (!session) return;
@@ -34,10 +43,11 @@ export function Header() {
     } finally {
       // Effacer la session côté client
       clearSession();
-
-      // Rediriger vers la page d'accueil
-      window.location.href = "/";
     }
+  };
+
+  const handleLoginSuccess = () => {
+    setIsLoginSheetOpen(false);
   };
 
   return (
@@ -63,9 +73,22 @@ export function Header() {
               </Button>
             </div>
           ) : (
-            <Link href="/" passHref>
-              <Button size="sm">Se connecter</Button>
-            </Link>
+            <Sheet open={isLoginSheetOpen} onOpenChange={setIsLoginSheetOpen}>
+              <SheetTrigger asChild>
+                <Button size="sm">
+                  <LogIn className="mr-2 h-4 w-4" />
+                  <span>Se connecter</span>
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="right" className="w-[400px] sm:max-w-md">
+                <SheetHeader>
+                  <SheetTitle>Connexion à CyberArk</SheetTitle>
+                </SheetHeader>
+                <div className="mt-6">
+                  <CredentialForm onSuccess={handleLoginSuccess} compact />
+                </div>
+              </SheetContent>
+            </Sheet>
           )}
         </nav>
       </div>

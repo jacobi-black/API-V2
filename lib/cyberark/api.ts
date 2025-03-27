@@ -6,7 +6,7 @@ import { ensureTrailingSlash, handleFetchError } from "@/lib/utils/utils";
  */
 export const CYBERARK_ENDPOINTS = {
   AUTH: {
-    CYBERARK: "PasswordVault/API/auth/Cyberark/Logon",
+    CYBERARK: "PasswordVault/API/auth/CYBERARK/Logon",
     LDAP: "PasswordVault/API/auth/LDAP/Logon",
     WINDOWS: "PasswordVault/API/auth/Windows/Logon",
     RADIUS: "PasswordVault/API/auth/RADIUS/Logon",
@@ -45,7 +45,7 @@ export const CYBERARK_ENDPOINTS = {
  */
 export function getAuthEndpoint(authType: AuthType): string {
   switch (authType) {
-    case AuthType.CyberArk:
+    case AuthType.CYBERARK:
       return CYBERARK_ENDPOINTS.AUTH.CYBERARK;
     case AuthType.LDAP:
       return CYBERARK_ENDPOINTS.AUTH.LDAP;

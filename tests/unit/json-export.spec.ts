@@ -2,7 +2,7 @@ import {
   exportToJson, 
   formatJsonString, 
   type JsonExportOptions 
-} from '@/lib/utils/export/json-export";
+} from "@/lib/utils/export/json-export";
 
 // Mock pour URL.createObjectURL
 global.URL.createObjectURL = jest.fn(() => "mock-url");

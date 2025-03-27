@@ -2,8 +2,8 @@ import {
   exportToCsv, 
   detectColumns, 
   formatHeaderTitle, 
-  type CsvExportOptions 
-} from '@/lib/utils/export/csv-export";
+  type CsvExportOptions
+} from "@/lib/utils/export/csv-export";
 
 // Mock pour URL.createObjectURL qui n'existe pas dans l'environnement de test
 global.URL.createObjectURL = jest.fn(() => "mock-url");

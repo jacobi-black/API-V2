@@ -19,23 +19,26 @@ POST /api/cyberark/auth
 Authentifie un utilisateur auprès de l'API CyberArk selon la méthode spécifiée.
 
 **Corps de la requête**:
+
 ```json
 {
   "baseUrl": "https://cyberark-instance.example.com",
   "username": "api_user",
   "password": "password",
-  "authType": "Cyberark",
+  "authType": "CYBERARK",
   "concurrentSession": true
 }
 ```
 
 Les types d'authentification supportés (`authType`) sont :
-- `Cyberark` (défaut) - Authentification standard CyberArk
+
+- `CYBERARK` (défaut) - Authentification standard CyberArk
 - `LDAP` - Authentification via LDAP
 - `Windows` - Authentification Windows
 - `RADIUS` - Authentification RADIUS
 
 **Réponse en cas de succès**:
+
 ```json
 {
   "success": true,
@@ -45,6 +48,7 @@ Les types d'authentification supportés (`authType`) sont :
 ```
 
 **Réponse en cas d'échec**:
+
 ```json
 {
   "success": false,
@@ -61,6 +65,7 @@ POST /api/cyberark/auth/logout
 Termine la session CyberArk active.
 
 **Corps de la requête**:
+
 ```json
 {
   "baseUrl": "https://cyberark-instance.example.com",
@@ -69,6 +74,7 @@ Termine la session CyberArk active.
 ```
 
 **Réponse en cas de succès**:
+
 ```json
 {
   "success": true
@@ -76,6 +82,7 @@ Termine la session CyberArk active.
 ```
 
 **Réponse en cas d'échec**:
+
 ```json
 {
   "success": false,
@@ -91,25 +98,16 @@ Toutes les entrées API sont validées à l'aide de schémas Zod. Le schéma de 
 
 ```typescript
 export const CredentialsSchema = z.object({
-  baseUrl: z
-    .string()
-    .url("L'URL doit être une URL valide")
-    .min(1, "L'URL ne peut pas être vide"),
-  username: z
-    .string()
-    .min(1, "Le nom d'utilisateur ne peut pas être vide"),
-  password: z
-    .string()
-    .min(1, "Le mot de passe ne peut pas être vide"),
-  authType: z.nativeEnum(AuthType, {
-    errorMap: () => ({ message: "Type d'authentification invalide" }),
-  }).default(AuthType.CyberArk),
-  concurrentSession: z
-    .boolean()
-    .default(false),
-  newPassword: z
-    .string()
-    .optional(),
+  baseUrl: z.string().url("L'URL doit être une URL valide").min(1, "L'URL ne peut pas être vide"),
+  username: z.string().min(1, "Le nom d'utilisateur ne peut pas être vide"),
+  password: z.string().min(1, "Le mot de passe ne peut pas être vide"),
+  authType: z
+    .nativeEnum(AuthType, {
+      errorMap: () => ({ message: "Type d'authentification invalide" }),
+    })
+    .default(AuthType.CYBERARK),
+  concurrentSession: z.boolean().default(false),
+  newPassword: z.string().optional(),
 });
 ```
 
@@ -129,10 +127,7 @@ Les API Routes Next.js agissent comme un proxy vers l'API CyberArk, permettant d
 
 ```typescript
 // Exemple d'authentification CyberArk
-export async function authenticateCyberArk(
-  credentials: CyberArkCredentials, 
-  authType: AuthType
-) {
+export async function authenticateCyberArk(credentials: CyberArkCredentials, authType: AuthType) {
   const baseUrl = ensureTrailingSlash(credentials.baseUrl);
   const endpoint = getAuthEndpoint(authType);
   const url = `${baseUrl}${endpoint}`;
@@ -161,7 +156,7 @@ Les constantes pour tous les endpoints CyberArk sont définies dans `lib/cyberar
 ```typescript
 export const CYBERARK_ENDPOINTS = {
   AUTH: {
-    CYBERARK: "PasswordVault/API/auth/Cyberark/Logon",
+    CYBERARK: "PasswordVault/API/auth/CYBERARK/Logon",
     LDAP: "PasswordVault/API/auth/LDAP/Logon",
     WINDOWS: "PasswordVault/API/auth/Windows/Logon",
     RADIUS: "PasswordVault/API/auth/RADIUS/Logon",
@@ -190,11 +185,13 @@ Pour les prochaines phases, nous prévoyons d'implémenter les APIs suivantes :
 ### Phase 2
 
 1. **Endpoints Comptes** :
+
    - `GET /api/cyberark/accounts` - Liste des comptes
    - `GET /api/cyberark/accounts/{id}` - Détails d'un compte
    - `GET /api/cyberark/accounts/{id}/activities` - Activités d'un compte
 
 2. **Endpoints Coffres** :
+
    - `GET /api/cyberark/safes` - Liste des coffres
    - `GET /api/cyberark/safes/{safeName}` - Détails d'un coffre
    - `GET /api/cyberark/safes/{safeName}/members` - Membres d'un coffre
@@ -206,6 +203,7 @@ Pour les prochaines phases, nous prévoyons d'implémenter les APIs suivantes :
 ### Phase 3
 
 1. **Endpoints d'Exportation** :
+
    - `GET /api/cyberark/export/json` - Exporter les résultats en JSON
    - `GET /api/cyberark/export/csv` - Exporter les résultats en CSV
 

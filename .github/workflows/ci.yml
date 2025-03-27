@@ -194,5 +194,5 @@ jobs:
           script: |
             cd /opt/cyberark-api-explorer
             git pull
-            chmod +x deploy.sh
+            chmod +x deploy.sh 
             ./deploy.sh

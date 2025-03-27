@@ -1,6 +1,6 @@
 # CyberArk API Explorer
 
-![Version](https://img.shields.io/badge/version-1.0.0-blue)
+![Version](https://img.shields.io/badge/version-0.2.0-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![Status](https://img.shields.io/badge/status-development-orange)
 
@@ -10,13 +10,12 @@ Une application web moderne permettant d'explorer et d'interagir avec les API Cy
 
 - [Vue d'ensemble](#vue-densemble)
 - [Fonctionnalités](#fonctionnalités)
+- [État du projet](#état-du-projet)
 - [Architecture](#architecture)
 - [Installation](#installation)
 - [Utilisation](#utilisation)
 - [Structure du projet](#structure-du-projet)
 - [Développement](#développement)
-- [Tests](#tests)
-- [Déploiement](#déploiement)
 - [Roadmap](#roadmap)
 - [Licence](#licence)
 - [Contact](#contact)
@@ -47,22 +46,40 @@ CyberArk API Explorer offre une solution intégrée à ces problèmes, permettan
 
 ## Fonctionnalités
 
-### Version 1 (Actuelle)
+### Implémentées (Phases 1-2)
 
-- **Authentification simplifiée** - Connexion à n'importe quelle instance CyberArk
-- **Exploration d'endpoints** - Interface intuitive pour parcourir toutes les API GET disponibles
+- **Authentification CyberArk** - Connexion à n'importe quelle instance CyberArk avec gestion sécurisée du token
+- **Exploration d'endpoints** - Interface intuitive pour parcourir les API disponibles
 - **Construction de requêtes** - Interface graphique pour paramétrer les requêtes API
-- **Visualisation des résultats** - Affichage formaté et navigable des réponses JSON
-- **Exportation de données** - Export en CSV ou JSON pour analyse ultérieure
+- **Visualisation des résultats** - Affichage formaté des réponses JSON avec options de visualisation
+- **Recherche dans les résultats** - Filtrage et mise en évidence des résultats
+- **Pagination** - Navigation facile dans les grands ensembles de données
 - **Proxy API** - Contourne les problèmes CORS courants avec les API CyberArk
 
-### Futures versions
+### En cours de développement (Phase 3)
 
-- **Historique des requêtes** - Sauvegarde des requêtes précédentes
+- **Exportation de données** - Export en CSV et JSON pour analyse ultérieure
+- **Améliorations UX/UI** - Optimisations de l'interface utilisateur et des animations
+- **Gestion d'état avancée** - Historique des requêtes et préférences utilisateur
+
+### Prévues (Phases futures)
+
 - **Collections** - Organisation des requêtes en collections
 - **Authentification persistante** - Option de sauvegarde des informations de connexion
 - **Support API POST/PUT/DELETE** - Support complet des opérations CRUD
 - **Dashboards personnalisés** - Visualisations et rapports personnalisés
+
+## État du projet
+
+Le projet est actuellement en développement actif :
+
+- **Phase 1 (Infrastructure) ✅** - Configuration de l'environnement et authentification
+- **Phase 2 (Fonctionnalités de base) ✅** - Explorateur d'endpoints, requêtes API et affichage des résultats
+- **Phase 3 (Exportation et UX) 🔄** - En cours de développement
+- **Phase 4 (Tests et documentation) 📅** - Planifiée
+- **Phase 5 (Finalisation) 📅** - Planifiée
+
+Pour suivre l'avancement détaillé, consultez le [document de roadmap](docs/development/ROADMAP.md).
 
 ## Architecture
 
@@ -73,7 +90,12 @@ CyberArk API Explorer utilise une architecture moderne basée sur les principes 
 - **State Management** - Gestion d'état côté client avec Zustand
 - **Progressive Enhancement** - Utilisation de React Suspense pour le chargement progressif
 
-Pour plus de détails, voir [ARCHITECTURE.md](ARCHITECTURE.md).
+L'application utilise une approche modulaire avec des composants spécialisés pour :
+- **Authentification** - Gestion sécurisée des tokens
+- **Exploration d'API** - Interface de navigation des endpoints
+- **Visualisation de données** - Affichage structuré des résultats
+
+Pour plus de détails, voir [docs/architecture/IMPLEMENTATION.md](docs/architecture/IMPLEMENTATION.md).
 
 ## Installation
 
@@ -110,37 +132,52 @@ NODE_ENV=development
 PORT=3000
 ```
 
+Pour des instructions d'installation détaillées, voir [docs/INSTALLATION.md](docs/INSTALLATION.md).
+
 ## Utilisation
 
 ### Connexion à CyberArk
 
-1. Accédez à la page d'accueil
-2. Entrez l'URL du serveur PVWA CyberArk (ex: https://cyberark.monentreprise.com)
+1. Accédez à la page d'accueil à l'adresse http://localhost:3000
+2. Entrez l'URL du serveur PVWA CyberArk (ex: https://cyberark.example.com)
 3. Saisissez vos identifiants (nom d'utilisateur et mot de passe)
-4. Sélectionnez la méthode d'authentification appropriée
+4. Sélectionnez la méthode d'authentification appropriée (CyberArk, LDAP, Windows, RADIUS)
 5. Cliquez sur "Se connecter"
 
 ### Exploration des API
 
-1. Parcourez les catégories d'API disponibles dans le menu de gauche
-2. Sélectionnez un endpoint spécifique à explorer
+1. Après connexion, parcourez les catégories d'API disponibles (Comptes, Coffres, Utilisateurs, etc.)
+2. Sélectionnez un endpoint spécifique pour voir ses détails
 3. Configurez les paramètres de requête selon vos besoins
 4. Cliquez sur "Exécuter" pour voir les résultats
 
-### Exportation des résultats
+### Visualisation des résultats
 
-1. Après avoir exécuté une requête, cliquez sur le bouton "Exporter"
-2. Choisissez le format souhaité (CSV ou JSON)
-3. Configurez les options d'exportation si nécessaire
-4. Cliquez sur "Télécharger" pour enregistrer le fichier
+1. Les résultats s'affichent dans un panneau dédié
+2. Choisissez le mode de visualisation (JSON, Tableau, Brut)
+3. Utilisez la barre de recherche pour filtrer les résultats
+4. Naviguez dans les grands ensembles de données avec la pagination
+5. Copiez ou téléchargez les résultats selon vos besoins
+
+Pour un guide d'utilisation complet, voir [docs/USAGE.md](docs/USAGE.md).
 
 ## Structure du projet
 
 ```
 API_V2/
 ├── app/                      # Next.js App Router
+│   ├── api/                  # API Routes (proxy)
+│   │   └── cyberark/         # Endpoints CyberArk
+│   ├── dashboard/            # Dashboard pages
+│   └── ...                   # Other app pages
 ├── components/               # Composants React
+│   ├── credential/           # Authentication components
+│   ├── endpoint/             # API endpoint components
+│   ├── results/              # Results display components
+│   └── ui/                   # UI components (Shadcn)
 ├── lib/                      # Bibliothèques et utilitaires
+│   ├── cyberark/             # CyberArk utilities
+│   └── utils.ts              # Common utilities
 ├── hooks/                    # Hooks React personnalisés
 ├── types/                    # Définitions de types TypeScript
 ├── store/                    # Stores Zustand
@@ -178,81 +215,49 @@ pnpm lint
   - Composants React: `PascalCase.tsx`
   - Utilitaires et hooks: `kebab-case.ts`
   - Types et interfaces: `kebab-case.d.ts`
+  - Stores Zustand: `kebab-case.store.ts`
+  - Schémas Zod: `kebab-case.schema.ts`
 
 - **Structure des composants**:
-  - Préférer l'approche fonctionnelle avec hooks
   - Utiliser `export function` sans default exports
-  - Typer les props explicitement
+  - Props comme premier argument avec type inline pour 1-2 props
+  - Pour 3+ props, créer type nommé `PascalCaseProps`
 
-- **Styling**:
-  - Utiliser Tailwind CSS pour tous les styles
-  - Suivre l'approche mobile-first
-  - Préférer `flex gap-n` à `space-y-n`
+- **Distinctions Server/Client**:
+  - Server Components TOUJOURS `async`
+  - Client Components TOUJOURS avec `'use client'` en haut
+  - Jamais de hooks dans Server Components
 
-Pour plus de détails, voir le [Guide de contribution](CONTRIBUTING.md).
-
-## Tests
-
-L'application utilise plusieurs niveaux de tests:
-
-### Tests unitaires
-
-Tests des fonctions et composants isolés avec Jest et React Testing Library.
-
-```bash
-pnpm test:unit
-```
-
-### Tests d'intégration
-
-Tests des interactions entre composants et des flux complets.
-
-```bash
-pnpm test:integration
-```
-
-### Tests end-to-end
-
-Tests des parcours utilisateur complets avec Cypress.
-
-```bash
-pnpm test:e2e
-```
-
-## Déploiement
-
-### Docker
-
-Nous fournissons un Dockerfile pour faciliter le déploiement:
-
-```bash
-# Construire l'image
-docker build -t cyberark-api-explorer .
-
-# Exécuter le conteneur
-docker run -p 3000:3000 cyberark-api-explorer
-```
-
-### Vercel / Netlify
-
-L'application est compatible avec les plateformes de déploiement automatisé comme Vercel et Netlify.
+Pour plus de détails, voir le [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md).
 
 ## Roadmap
 
-### Version 1.0 (Actuelle)
-- ✅ Support d'authentification CyberArk
-- ✅ Exploration des API GET
-- ✅ Exportation CSV et JSON
+### Phase 1: Infrastructure (Terminée ✅)
+- ✅ Configuration du projet Next.js/TypeScript/Tailwind
+- ✅ Structure de dossiers et architecture
+- ✅ Authentification CyberArk (formulaire et API proxy)
 
-### Version 2.0
-- 🔄 Historique des requêtes
-- 🔄 Collections de requêtes
-- 🔄 Support de plusieurs sessions
+### Phase 2: Fonctionnalités de base (Terminée ✅)
+- ✅ Explorateur d'endpoints
+- ✅ Requêtes API vers CyberArk
+- ✅ Affichage des résultats
 
-### Version 3.0
-- 🔄 Support API POST/PUT/DELETE
-- 🔄 Intégration de base de données
-- 🔄 Dashboards personnalisés
+### Phase 3: Exportation et UX (En cours 🔄)
+- 🔄 Fonctionnalités d'exportation (CSV/JSON)
+- 🔄 Améliorations UX/UI
+- 🔄 Gestion d'état globale
+
+### Phase 4: Tests et documentation (À venir)
+- 📅 Tests complets
+- 📅 Documentation améliorée
+- 📅 Préparation au déploiement
+
+### Phase 5: Finalisation (À venir)
+- 📅 Revue de code et refactoring
+- 📅 Tests de sécurité
+- 📅 Livraison V1
+
+Pour plus de détails, consultez la [feuille de route complète](docs/development/ROADMAP.md).
 
 ## Licence
 

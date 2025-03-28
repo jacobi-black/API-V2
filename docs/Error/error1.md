@@ -1,12 +1,19 @@
-Réponse HTML reçue au lieu de JSON: "<!DOCTYPE html><html lang=\"fr\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><link rel=\"stylesheet\" href=\"/_next/static/css/app/layout.css?v=1743145"
+Error: Erreur 401: Unauthorized
 
-hooks/api/use-cyberark-query.ts (74:17) @ execute
+hooks/api/use-cyberark-query.ts (123:15) @ execute
 
 
-  72 |       // Vérifier si la réponse ressemble à du HTML
-  73 |       if (responseText.trim().startsWith("<!DOCTYPE") || responseText.trim().startsWith("<html")) {
-> 74 |         console.error("Réponse HTML reçue au lieu de JSON:", responseText.substring(0, 200));
-     |                 ^
-  75 |         throw new Error(
-  76 |           "Le serveur a répondu avec une page HTML. Vérifiez l'URL et l'authentification."
-  77 |         );
+  121 |
+  122 |       if (!response.ok) {
+> 123 |         throw new Error(result.error || `Erreur ${response.status}`);
+      |               ^
+  124 |       }
+  125 |
+  126 |       // Mettre à jour l'état avec les données
+Call Stack
+2
+
+execute
+hooks/api/use-cyberark-query.ts (123:15)
+async handleExecuteQuery
+app/dashboard/page.tsx (120:22)

@@ -84,21 +84,38 @@ export function useCyberArkQuery<T>(endpoint: string | null, options: ApiRequest
         "avec les paramètres:",
         mergedOptions.params
       );
+      console.log(
+        "Token d'authentification utilisé:",
+        session.token
+          ? `${session.token.substring(0, 10)}... (${session.token.length} caractères)`
+          : "Manquant"
+      );
+
+      const headers = {
+        "Content-Type": "application/json",
+        Authorization: session.token,
+        ...mergedOptions.headers,
+      };
 
       const response = await fetch(url, {
         method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: session.token,
-          ...mergedOptions.headers,
-        },
+        headers,
         cache: mergedOptions.cache || "no-store",
       });
 
       console.log("Statut de la réponse:", response.status, response.statusText);
+      console.log("En-têtes de la réponse:", Object.fromEntries(response.headers.entries()));
 
       // Récupérer d'abord la réponse sous forme de texte
       const responseText = await response.text();
+
+      // Journaliser un aperçu de la réponse
+      console.log(
+        "Aperçu de la réponse:",
+        responseText.length > 200
+          ? `${responseText.substring(0, 200)}... (${responseText.length} caractères)`
+          : responseText
+      );
 
       // Vérifier si la réponse ressemble à du HTML
       if (responseText.trim().startsWith("<!DOCTYPE") || responseText.trim().startsWith("<html")) {

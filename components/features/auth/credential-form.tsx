@@ -57,6 +57,12 @@ export function CredentialForm({
     setAuthError(null);
 
     try {
+      console.log("Tentative d'authentification avec:", {
+        baseUrl: data.baseUrl,
+        username: data.username,
+        authType: data.authType,
+      });
+
       const response = await fetch("/api/cyberark/auth", {
         method: "POST",
         headers: {
@@ -71,19 +77,34 @@ export function CredentialForm({
         throw new Error(result.error || "Échec de l'authentification");
       }
 
+      console.log(
+        "Authentification réussie, token reçu:",
+        result.token
+          ? `${result.token.substring(0, 10)}... (${result.token.length} caractères)`
+          : "Vide"
+      );
+
       // Stocker les informations sans le mot de passe en ignorant l'avertissement du linter
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { password, ...safeCredentials } = data;
       setCredentials(safeCredentials);
 
       // Créer et stocker la session
-      setSession({
-        token: result.token,
+      const session = {
+        token: result.token.trim(), // Suppression des espaces superflus
         createdAt: new Date(),
         expiresAt: new Date(result.expiresAt),
-        baseUrl: data.baseUrl,
+        baseUrl: data.baseUrl.trim(), // Suppression des espaces superflus
         username: data.username,
+      };
+
+      console.log("Session stockée:", {
+        tokenLength: session.token.length,
+        expiresAt: session.expiresAt,
+        baseUrl: session.baseUrl,
       });
+
+      setSession(session);
 
       // Appeler le callback de succès si fourni
       if (onSuccess) {

@@ -11,6 +11,28 @@ export async function GET(request: NextRequest) {
     // Récupérer le token d'authentification de l'en-tête
     const authHeader = request.headers.get("Authorization");
 
+    // Déboguer l'en-tête d'authentification et extraire uniquement le token
+    console.log(
+      "Token d'authentification:",
+      authHeader
+        ? `${authHeader.substring(0, 10)}... (${authHeader.length} caractères)`
+        : "Manquant"
+    );
+
+    // Vérifie si le token contient des caractères indésirables ou des espaces
+    if (authHeader) {
+      const containsSpaces = authHeader.includes(" ");
+      const containsNewlines = authHeader.includes("\n") || authHeader.includes("\r");
+      const containsQuotes = authHeader.includes('"') || authHeader.includes("'");
+
+      console.log("Analyse du token:", {
+        containsSpaces,
+        containsNewlines,
+        containsQuotes,
+        length: authHeader.length,
+      });
+    }
+
     if (!authHeader) {
       return NextResponse.json(
         {
@@ -53,14 +75,27 @@ export async function GET(request: NextRequest) {
 
     console.log("Requête à l'API CyberArk:", apiUrl);
 
-    // Effectuer la requête à l'API CyberArk
+    // Effectuer la requête à l'API CyberArk avec des en-têtes vérifiés
+    const headers = {
+      Authorization: authHeader.trim(), // Enlever les espaces en début/fin
+      "Content-Type": "application/json",
+    };
+
+    console.log("En-têtes envoyés:", {
+      Authorization: headers.Authorization
+        ? `${headers.Authorization.substring(0, 10)}...`
+        : "Manquant",
+      ContentType: headers["Content-Type"],
+    });
+
     const response = await fetch(apiUrl, {
       method: "GET",
-      headers: {
-        Authorization: authHeader,
-        "Content-Type": "application/json",
-      },
+      headers,
     });
+
+    // Log de la réponse pour débogage
+    console.log("Statut de la réponse:", response.status, response.statusText);
+    console.log("En-têtes de réponse:", Object.fromEntries(response.headers.entries()));
 
     if (!response.ok) {
       throw await handleFetchError(response);

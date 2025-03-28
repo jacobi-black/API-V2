@@ -11,6 +11,12 @@ export async function GET(request: NextRequest, { params }: { params: { path: st
     // Récupérer le token d'authentification de l'en-tête
     const authHeader = request.headers.get("Authorization");
 
+    // Déboguer l'en-tête d'authentification
+    console.log(
+      "En-tête d'authentification:",
+      authHeader ? `${authHeader.substring(0, 10)}...` : "Manquant"
+    );
+
     if (!authHeader) {
       return NextResponse.json(
         {
@@ -58,12 +64,26 @@ export async function GET(request: NextRequest, { params }: { params: { path: st
     console.log("Requête à l'API CyberArk:", apiUrl);
 
     // Effectuer la requête à l'API CyberArk
+    const headers = {
+      Authorization: authHeader,
+      "Content-Type": "application/json",
+    };
+
+    console.log("En-têtes de la requête CyberArk:", {
+      Authorization: authHeader ? `${authHeader.substring(0, 10)}...` : "Manquant",
+      "Content-Type": "application/json",
+    });
+
     const response = await fetch(apiUrl, {
       method: "GET",
-      headers: {
-        Authorization: authHeader,
-        "Content-Type": "application/json",
-      },
+      headers,
+    });
+
+    // Journaliser la réponse
+    console.log("Réponse CyberArk:", {
+      status: response.status,
+      statusText: response.statusText,
+      headers: Object.fromEntries(response.headers.entries()),
     });
 
     if (!response.ok) {

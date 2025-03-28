@@ -18,6 +18,7 @@ import {
   CardTitle,
 } from "@/components/shared/ui/card";
 import { LogIn } from "lucide-react";
+import { AvailableEndpoints } from "@/components/features/api-catalog/available-endpoints";
 
 export default function DashboardPage() {
   return (
@@ -124,27 +125,31 @@ function DashboardClient() {
   // Afficher un message d'invitation à la connexion si l'utilisateur n'est pas authentifié
   if (!isAuthenticated) {
     return (
-      <Card className="mx-auto max-w-2xl">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <LogIn className="h-5 w-5" />
-            Connexion requise
-          </CardTitle>
-          <CardDescription>
-            Pour accéder au tableau de bord et explorer les API CyberArk, veuillez vous connecter.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <p className="mb-4">
-            Utilisez le bouton "Se connecter" en haut à droite de l'écran pour saisir vos
-            identifiants CyberArk.
-          </p>
-          <p>
-            Une fois connecté, vous pourrez explorer et tester les endpoints API, visualiser les
-            réponses et gérer vos requêtes.
-          </p>
-        </CardContent>
-      </Card>
+      <div className="space-y-8">
+        <Card className="mx-auto max-w-2xl">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <LogIn className="h-5 w-5" />
+              Connexion requise
+            </CardTitle>
+            <CardDescription>
+              Pour accéder au tableau de bord et explorer les API CyberArk, veuillez vous connecter.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p className="mb-4">
+              Utilisez le bouton "Se connecter" en haut à droite de l'écran pour saisir vos
+              identifiants CyberArk.
+            </p>
+            <p>
+              Une fois connecté, vous pourrez explorer et tester les endpoints API, visualiser les
+              réponses et gérer vos requêtes.
+            </p>
+          </CardContent>
+        </Card>
+
+        <AvailableEndpoints />
+      </div>
     );
   }
 

@@ -22,31 +22,31 @@ export async function GET(request: NextRequest, { params }: { params: { path: st
     console.error("URL de la requête:", request.url);
     console.error("Headers complets:", Object.fromEntries(request.headers.entries()));
 
-    // Vérifie le format du token
+    // Vérifier et nettoyer le token (enlever les guillemets)
+    let cleanToken = authHeader;
     if (authHeader) {
-      // Vérifications supplémentaires sur le token
-      const containsSpaces = authHeader.includes(" ");
-      const containsNewlines = authHeader.includes("\n") || authHeader.includes("\r");
-      const containsQuotes = authHeader.includes('"') || authHeader.includes("'");
-      const startsWithBearer = authHeader.startsWith("Bearer ");
+      // Supprimer les guillemets qui entourent le token
+      if (authHeader.startsWith('"') && authHeader.endsWith('"')) {
+        cleanToken = authHeader.substring(1, authHeader.length - 1);
+        console.error("Token nettoyé des guillemets externes");
+      }
 
-      console.error("Analyse du token:", {
-        containsSpaces,
-        containsNewlines,
-        containsQuotes,
-        startsWithBearer,
-        length: authHeader.length,
-      });
+      // Vérifier si le token commence par "Bearer "
+      if (cleanToken.startsWith("Bearer ")) {
+        cleanToken = cleanToken.substring(7).trim();
+        console.error("Préfixe Bearer supprimé");
+      }
 
-      // Si le token commence par "Bearer ", retirons-le pour le test
-      const cleanToken = startsWithBearer ? authHeader.substring(7).trim() : authHeader.trim();
+      // Enlever les espaces en début/fin
+      cleanToken = cleanToken.trim();
+
       console.error(
-        "Token nettoyé:",
-        `${cleanToken.substring(0, 10)}... (${cleanToken.length} caractères)`
+        "Token après nettoyage:",
+        `${cleanToken.substring(0, 10)}...${cleanToken.substring(cleanToken.length - 10)} (${cleanToken.length} caractères)`
       );
     }
 
-    if (!authHeader) {
+    if (!cleanToken) {
       console.error("ERREUR: Token d'authentification manquant");
       return NextResponse.json(
         {
@@ -94,13 +94,8 @@ export async function GET(request: NextRequest, { params }: { params: { path: st
     console.log("Requête à l'API CyberArk:", apiUrl);
 
     // Effectuer la requête à l'API CyberArk
-    // Pour CyberArk, utilisons le token sans "Bearer" préfixe si présent
-    const tokenValue = authHeader.startsWith("Bearer ")
-      ? authHeader.substring(7).trim()
-      : authHeader.trim();
-
     const headers = {
-      Authorization: tokenValue,
+      Authorization: cleanToken,
       "Content-Type": "application/json",
     };
 
@@ -135,7 +130,7 @@ export async function GET(request: NextRequest, { params }: { params: { path: st
             success: false,
             error: "Non authentifié (erreur 401 de CyberArk)",
             details: errorText.substring(0, 500), // Limiter à 500 caractères
-            tokenLength: tokenValue.length,
+            tokenLength: cleanToken.length,
           },
           { status: 401 }
         );

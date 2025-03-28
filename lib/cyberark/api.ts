@@ -71,6 +71,8 @@ export async function authenticateCyberArk(credentials: CyberArkCredentials, aut
   const url = `${baseUrl}${endpoint}`;
 
   try {
+    console.error(`Tentative d'authentification à ${url}`);
+
     const response = await fetch(url, {
       method: "POST",
       headers: {
@@ -99,8 +101,16 @@ export async function authenticateCyberArk(credentials: CyberArkCredentials, aut
       );
     }
 
-    // Le token est une simple chaîne de texte
-    const token = responseText;
+    // Le token est une simple chaîne de texte - s'assurer qu'il n'y a pas de guillemets
+    let token = responseText.trim();
+
+    // Enlever les guillemets si présents
+    if (token.startsWith('"') && token.endsWith('"')) {
+      token = token.substring(1, token.length - 1);
+      console.error("Token nettoyé des guillemets dans la fonction d'authentification");
+    }
+
+    console.error(`Token récupéré (${token.length} caractères): ${token.substring(0, 15)}...`);
 
     // Créer une date d'expiration (20 minutes par défaut)
     const createdAt = new Date();

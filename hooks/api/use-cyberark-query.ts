@@ -89,10 +89,30 @@ export function useCyberArkQuery<T>(endpoint: string | null, options: ApiRequest
           : "MANQUANT"
       );
 
-      // Vérification du token pour CyberArk (sans "Bearer" prefix)
-      const tokenValue = session.token.startsWith("Bearer ")
-        ? session.token.substring(7).trim()
-        : session.token.trim();
+      // Vérification et nettoyage du token pour CyberArk
+      let tokenValue = session.token;
+
+      // Supprimer les guillemets si présents
+      if (tokenValue.startsWith('"') && tokenValue.endsWith('"')) {
+        tokenValue = tokenValue.substring(1, tokenValue.length - 1);
+        console.error("Token nettoyé des guillemets externes");
+      }
+
+      // Supprimer le préfixe "Bearer" si présent
+      if (tokenValue.startsWith("Bearer ")) {
+        tokenValue = tokenValue.substring(7);
+        console.error("Préfixe Bearer supprimé");
+      }
+
+      // Enlever les espaces supplémentaires
+      tokenValue = tokenValue.trim();
+
+      console.error(
+        "Token final:",
+        tokenValue
+          ? `${tokenValue.substring(0, 10)}...${tokenValue.substring(tokenValue.length - 10)} (${tokenValue.length})`
+          : "MANQUANT"
+      );
 
       // Préparation des en-têtes selon les exigences CyberArk
       const headers = {

@@ -42,11 +42,32 @@ export async function POST(request: NextRequest) {
     }
 
     // Succès - retourner le token et la date d'expiration
-    return NextResponse.json({
-      success: true,
-      token: authResult.token,
-      expiresAt: authResult.expiresAt.toISOString(),
-    });
+    if (authResult.token) {
+      let cleanToken = authResult.token;
+      if (cleanToken.startsWith('"') && cleanToken.endsWith('"')) {
+        cleanToken = cleanToken.substring(1, cleanToken.length - 1);
+        console.error(
+          "Token d'authentification nettoyé des guillemets avant de le renvoyer au client"
+        );
+      }
+
+      return NextResponse.json({
+        success: true,
+        token: cleanToken,
+        expiresAt:
+          authResult.expiresAt?.toISOString() ||
+          new Date(Date.now() + 20 * 60 * 1000).toISOString(),
+      });
+    }
+
+    // Cas improbable, mais pour satisfaire TypeScript
+    return NextResponse.json(
+      {
+        success: false,
+        error: "Échec de l'authentification: token manquant",
+      },
+      { status: 500 }
+    );
   } catch (error) {
     console.error("Erreur d'authentification:", error);
 

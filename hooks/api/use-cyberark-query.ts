@@ -78,24 +78,35 @@ export function useCyberArkQuery<T>(endpoint: string | null, options: ApiRequest
       }
 
       // Effectuer la requête
-      console.log(
-        "Envoi de la requête à l'URL:",
-        url,
-        "avec les paramètres:",
-        mergedOptions.params
-      );
-      console.log(
-        "Token d'authentification utilisé:",
+      const startTime = performance.now();
+      console.error("### CYBERARK QUERY DEBUG ###");
+      console.error(`Requête: ${url}`);
+      console.error(`Paramètres:`, mergedOptions.params);
+      console.error(
+        `Token:`,
         session.token
-          ? `${session.token.substring(0, 10)}... (${session.token.length} caractères)`
-          : "Manquant"
+          ? `${session.token.substring(0, 10)}...${session.token.substring(session.token.length - 10)} (${session.token.length})`
+          : "MANQUANT"
       );
 
+      // Vérification du token pour CyberArk (sans "Bearer" prefix)
+      const tokenValue = session.token.startsWith("Bearer ")
+        ? session.token.substring(7).trim()
+        : session.token.trim();
+
+      // Préparation des en-têtes selon les exigences CyberArk
       const headers = {
         "Content-Type": "application/json",
-        Authorization: session.token,
+        Authorization: tokenValue,
         ...mergedOptions.headers,
       };
+
+      console.error("En-têtes préparés:", {
+        ContentType: headers["Content-Type"],
+        Authorization: headers.Authorization
+          ? `${headers.Authorization.substring(0, 10)}...${headers.Authorization.substring(headers.Authorization.length - 10)} (${headers.Authorization.length})`
+          : "MANQUANT",
+      });
 
       const response = await fetch(url, {
         method: "GET",
@@ -103,14 +114,16 @@ export function useCyberArkQuery<T>(endpoint: string | null, options: ApiRequest
         cache: mergedOptions.cache || "no-store",
       });
 
-      console.log("Statut de la réponse:", response.status, response.statusText);
-      console.log("En-têtes de la réponse:", Object.fromEntries(response.headers.entries()));
+      const endTime = performance.now();
+      console.error(`Réponse reçue en ${Math.floor(endTime - startTime)}ms`);
+      console.error(`Statut:`, response.status, response.statusText);
+      console.error(`En-têtes:`, Object.fromEntries(response.headers.entries()));
 
       // Récupérer d'abord la réponse sous forme de texte
       const responseText = await response.text();
 
       // Journaliser un aperçu de la réponse
-      console.log(
+      console.error(
         "Aperçu de la réponse:",
         responseText.length > 200
           ? `${responseText.substring(0, 200)}... (${responseText.length} caractères)`

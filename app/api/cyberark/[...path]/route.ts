@@ -11,17 +11,47 @@ export async function GET(request: NextRequest, { params }: { params: { path: st
     // Récupérer le token d'authentification de l'en-tête
     const authHeader = request.headers.get("Authorization");
 
-    // Déboguer l'en-tête d'authentification
-    console.log(
+    // Forcer les logs avec console.error pour être sûr qu'ils apparaissent
+    console.error("## DÉBOGAGE 401 ERROR ##");
+    console.error(
       "En-tête d'authentification:",
-      authHeader ? `${authHeader.substring(0, 10)}...` : "Manquant"
+      authHeader
+        ? `${authHeader.substring(0, 10)}...${authHeader.substring(authHeader.length - 10)} (${authHeader.length} caractères)`
+        : "MANQUANT"
     );
+    console.error("URL de la requête:", request.url);
+    console.error("Headers complets:", Object.fromEntries(request.headers.entries()));
+
+    // Vérifie le format du token
+    if (authHeader) {
+      // Vérifications supplémentaires sur le token
+      const containsSpaces = authHeader.includes(" ");
+      const containsNewlines = authHeader.includes("\n") || authHeader.includes("\r");
+      const containsQuotes = authHeader.includes('"') || authHeader.includes("'");
+      const startsWithBearer = authHeader.startsWith("Bearer ");
+
+      console.error("Analyse du token:", {
+        containsSpaces,
+        containsNewlines,
+        containsQuotes,
+        startsWithBearer,
+        length: authHeader.length,
+      });
+
+      // Si le token commence par "Bearer ", retirons-le pour le test
+      const cleanToken = startsWithBearer ? authHeader.substring(7).trim() : authHeader.trim();
+      console.error(
+        "Token nettoyé:",
+        `${cleanToken.substring(0, 10)}... (${cleanToken.length} caractères)`
+      );
+    }
 
     if (!authHeader) {
+      console.error("ERREUR: Token d'authentification manquant");
       return NextResponse.json(
         {
           success: false,
-          error: "Non authentifié",
+          error: "Non authentifié (token manquant)",
         },
         { status: 401 }
       );
@@ -64,14 +94,21 @@ export async function GET(request: NextRequest, { params }: { params: { path: st
     console.log("Requête à l'API CyberArk:", apiUrl);
 
     // Effectuer la requête à l'API CyberArk
+    // Pour CyberArk, utilisons le token sans "Bearer" préfixe si présent
+    const tokenValue = authHeader.startsWith("Bearer ")
+      ? authHeader.substring(7).trim()
+      : authHeader.trim();
+
     const headers = {
-      Authorization: authHeader,
+      Authorization: tokenValue,
       "Content-Type": "application/json",
     };
 
-    console.log("En-têtes de la requête CyberArk:", {
-      Authorization: authHeader ? `${authHeader.substring(0, 10)}...` : "Manquant",
-      "Content-Type": "application/json",
+    console.error("En-têtes de la requête CyberArk:", {
+      Authorization: headers.Authorization
+        ? `${headers.Authorization.substring(0, 10)}...${headers.Authorization.substring(headers.Authorization.length - 10)} (${headers.Authorization.length} chars)`
+        : "MANQUANT",
+      ContentType: headers["Content-Type"],
     });
 
     const response = await fetch(apiUrl, {
@@ -80,11 +117,32 @@ export async function GET(request: NextRequest, { params }: { params: { path: st
     });
 
     // Journaliser la réponse
-    console.log("Réponse CyberArk:", {
+    console.error("Réponse CyberArk:", {
       status: response.status,
       statusText: response.statusText,
       headers: Object.fromEntries(response.headers.entries()),
     });
+
+    // Si erreur 401, journalisons plus de détails
+    if (response.status === 401) {
+      try {
+        const errorText = await response.text();
+        console.error("Détails de l'erreur 401:", errorText);
+
+        // Réponse d'erreur avec informations de débogage
+        return NextResponse.json(
+          {
+            success: false,
+            error: "Non authentifié (erreur 401 de CyberArk)",
+            details: errorText.substring(0, 500), // Limiter à 500 caractères
+            tokenLength: tokenValue.length,
+          },
+          { status: 401 }
+        );
+      } catch (readError) {
+        console.error("Impossible de lire le corps de l'erreur:", readError);
+      }
+    }
 
     if (!response.ok) {
       throw await handleFetchError(response);

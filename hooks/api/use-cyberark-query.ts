@@ -39,23 +39,52 @@ export function useCyberArkQuery<T>(endpoint: string | null, options: ApiRequest
       // Construire l'URL avec les paramètres de requête
       let url = `/api/cyberark/${targetEndpoint}`;
 
-      // Ajouter les paramètres d'URL si nécessaire
-      if (mergedOptions.params && Object.keys(mergedOptions.params).length > 0) {
-        const searchParams = new URLSearchParams();
+      // Si l'endpoint ne commence pas par le préfixe de l'API CyberArk, on utilise la route générique
+      if (!targetEndpoint.startsWith("PasswordVault/API/")) {
+        // Ajouter les paramètres d'URL si nécessaire
+        if (mergedOptions.params && Object.keys(mergedOptions.params).length > 0) {
+          const searchParams = new URLSearchParams();
 
-        Object.entries(mergedOptions.params).forEach(([key, value]) => {
-          if (value !== undefined && value !== null && value !== "") {
-            searchParams.append(key, String(value));
+          Object.entries(mergedOptions.params).forEach(([key, value]) => {
+            if (value !== undefined && value !== null && value !== "") {
+              searchParams.append(key, String(value));
+            }
+          });
+
+          const searchString = searchParams.toString();
+          if (searchString) {
+            url += `?${searchString}`;
           }
-        });
+        }
+      } else {
+        // Pour les appels directs à l'API CyberArk, on utilise la route générique
+        url = `/api/cyberark/${targetEndpoint.split("/").slice(2).join("/")}`;
 
-        const searchString = searchParams.toString();
-        if (searchString) {
-          url += `?${searchString}`;
+        // Ajouter les paramètres d'URL si nécessaire
+        if (mergedOptions.params && Object.keys(mergedOptions.params).length > 0) {
+          const searchParams = new URLSearchParams();
+
+          Object.entries(mergedOptions.params).forEach(([key, value]) => {
+            if (value !== undefined && value !== null && value !== "") {
+              searchParams.append(key, String(value));
+            }
+          });
+
+          const searchString = searchParams.toString();
+          if (searchString) {
+            url += `?${searchString}`;
+          }
         }
       }
 
       // Effectuer la requête
+      console.log(
+        "Envoi de la requête à l'URL:",
+        url,
+        "avec les paramètres:",
+        mergedOptions.params
+      );
+
       const response = await fetch(url, {
         method: "GET",
         headers: {
@@ -65,6 +94,8 @@ export function useCyberArkQuery<T>(endpoint: string | null, options: ApiRequest
         },
         cache: mergedOptions.cache || "no-store",
       });
+
+      console.log("Statut de la réponse:", response.status, response.statusText);
 
       // Récupérer d'abord la réponse sous forme de texte
       const responseText = await response.text();

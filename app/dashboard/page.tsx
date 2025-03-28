@@ -81,7 +81,10 @@ function DashboardClient() {
         }
 
         // Remplacer le paramètre dans le chemin
-        pathWithParams = pathWithParams.replace(`{${param.name}}`, pathParams[param.name]);
+        pathWithParams = pathWithParams.replace(
+          `{${param.name}}`,
+          encodeURIComponent(pathParams[param.name])
+        );
       }
     }
 
@@ -96,11 +99,21 @@ function DashboardClient() {
       endpointPath = segments.join("/");
     }
 
+    // S'assurer que l'URL de base est correctement formée
+    if (!session?.baseUrl) {
+      setError("URL de base CyberArk non définie");
+      return;
+    }
+
     // Ajouter l'URL de base aux paramètres
     const params = {
       ...queryParams,
-      baseUrl: session?.baseUrl || "",
+      baseUrl: session.baseUrl.trim(),
     };
+
+    // Afficher le détail de la requête pour déboguer
+    console.log("Exécution de la requête sur l'endpoint:", endpointPath);
+    console.log("Paramètres:", params);
 
     try {
       setError(null);

@@ -22,7 +22,7 @@ export interface EndpointDetailProps {
 }
 
 export function EndpointDetail({ onExecute, onReset, isLoading }: EndpointDetailProps) {
-  const { selectedEndpoint, selectedCategory, selectCategory, resetParams } = useEndpointStore();
+  const { selectedEndpoint, resetSelectedEndpoint, resetParams } = useEndpointStore();
 
   if (!selectedEndpoint) {
     return null;
@@ -30,9 +30,7 @@ export function EndpointDetail({ onExecute, onReset, isLoading }: EndpointDetail
 
   // Fonction pour gérer le retour à la liste des endpoints
   const handleBack = () => {
-    if (selectedCategory) {
-      selectCategory(selectedCategory);
-    }
+    resetSelectedEndpoint();
   };
 
   // Fonction pour réinitialiser les paramètres
